@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.autotesting;
+package org.firstinspires.ftc.teamcode.autotesting;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

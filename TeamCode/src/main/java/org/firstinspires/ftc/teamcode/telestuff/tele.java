@@ -5,7 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 //import com.arcrobotics.ftclib.controller.PIDController;
 
@@ -13,12 +15,28 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.robot.robot;
+import org.firstinspires.ftc.teamcode.robot.RobotConstants;
 
 @TeleOp(name="teletesting")
 public class tele extends LinearOpMode{
 
 
     robot robot = new robot();
+ //   RobotConstants constants = new RobotConstants();
+
+    public DcMotor leftFront;
+    public DcMotor rightFront;
+    public DcMotor leftBack;
+    public DcMotor rightBack;
+
+
+    public DcMotorEx armMotor;
+
+
+
+    public Servo wrist;
+    public Servo intakeservo;
+
     enum intakeState { //INTAKE
        START,
         Ready,
@@ -38,27 +56,71 @@ public class tele extends LinearOpMode{
         outtake,
         endofouttake
     }
-
-
     double SpeedAdjust = 1;
-    int DEPOSITARMPOS = 2970;
-    int PREINTAKEARMPOS = 4225;
-    int DRIVEARMPOS = 1000;
-    int INTAKEARMPOS = 4735;
-    int SPECARMPOS = 2900;
-    int AFTERSPECDROPPOS = 3200;
-    double WRISTCENTERPOS = 0.512;
-    double INTAKEIN = 0;
-    double INTAKEOUT = 1;
-    double INTAKEOFF = 0.5;
+    HardwareMap hwMap = null;
+   public void initialize() {
+       leftFront = hwMap.get(DcMotorEx.class, "leftFront");
+       leftBack = hwMap.get(DcMotorEx.class, "leftRear");
+       rightBack = hwMap.get(DcMotorEx.class, "rightRear");
+       rightFront = hwMap.get(DcMotorEx.class, "rightFront");
 
+       armMotor = hwMap.get(DcMotorEx.class, "arm");
+       wrist = hwMap.get(Servo.class, "wrist");
+       intakeservo = hwMap.get(Servo.class, "intake");
+
+       leftFront.setDirection(DcMotor.Direction.FORWARD);
+       rightFront.setDirection(DcMotor.Direction.REVERSE);
+       leftBack.setDirection(DcMotor.Direction.FORWARD);
+       rightBack.setDirection(DcMotor.Direction.REVERSE);
+       armMotor.setDirection(DcMotor.Direction.FORWARD);
+
+       leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+       leftFront.setPower(0);
+       rightFront.setPower(0);
+       leftBack.setPower(0);
+       rightBack.setPower(0);
+       armMotor.setPower(0);
+
+       leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+   }
+    @Override
+    public void runOpMode() {
+        work();
+    }
+
+    public void work() {
+        while (!isStarted() && !isStopRequested()) {
+        }
+
+        initialize();
+
+        frameTimer.resetTimer();
+        leftIntakeArm.getController().pwmEnable();
+        rightIntakeArm.getController().pwmEnable();
+
+
+        while (opModeIsActive()) {
+            driverControlUpdate();
+
+            telemetry();
+        }
+    }
     public void runOpMode() throws InterruptedException {
 
 
-        robot.init(hardwareMap);
-    robot.armMotor.setTargetPosition(DRIVEARMPOS);
-        robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.armMotor.setPower(0.9);
+
+        armMotor.setTargetPosition(RobotConstants.STATIONARYPOS);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.9);
 
 
         waitForStart();
@@ -69,10 +131,10 @@ public class tele extends LinearOpMode{
         Deposit outtake = Deposit.START;
         Speciman specdepo = Speciman.START;
 
-    robot.armMotor.setTargetPosition(DRIVEARMPOS);
-        robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.armMotor.setPower(0.9);
-        robot.wrist.setPosition(WRISTCENTERPOS);
+        armMotor.setTargetPosition(DRIVEARMPOS);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(0.9);
+        wrist.setPosition(RobotConstants.WRISTCENTERPOS);
 
         while (opModeIsActive() && !isStopRequested()) {
 
@@ -87,17 +149,17 @@ public class tele extends LinearOpMode{
             switch (intake) { // scoring pos with lift
                 case START:
                     if (gamepad2.dpad_down) {
-                        robot.armMotor.setTargetPosition(PREINTAKEARMPOS);
-                        robot.wrist.setPosition(WRISTCENTERPOS);
+                        armMotor.setTargetPosition(PREINTAKEARMPOS);
+                        wrist.setPosition(RobotConstants.WRISTCENTERPOS);
 
                         intake = intakeState.Intake; //OUTTAKE POSITIONS, DIF HEIGHTS (black frame thing for pixels)
                     }
                     break;
                 case Intake:
                     if (gamepad1.a) {
-                        robot.wrist.setPosition(WRISTCENTERPOS);
-                        robot.armMotor.setTargetPosition(INTAKEARMPOS);
-                        robot.intake.setPosition(INTAKEIN);
+                        wrist.setPosition(RobotConstants.WRISTCENTERPOS);
+                       armMotor.setTargetPosition(INTAKEARMPOS);
+                        intakeservo.setPosition(RobotConstants.INTAKEON);
                         intake = intakeState.START;
                     }
                     break;
@@ -110,15 +172,15 @@ public class tele extends LinearOpMode{
                 case START:
 
                     if (gamepad2.dpad_up) {
-                        robot.wrist.setPosition(WRISTCENTERPOS);
-                        robot.armMotor.setTargetPosition(DEPOSITARMPOS);
+                        wrist.setPosition(RobotConstants.WRISTCENTERPOS);
+                        armMotor.setTargetPosition(DEPOSITARMPOS);
                        /// robot.intake.setPosition(0.5);
                         outtake = Deposit.outtake;
                     }
                     break;
                 case outtake:
                     if (gamepad1.right_trigger >=0.5) {
-                        robot.intake.setPosition(INTAKEOUT);
+                       intakeservo.setPosition(RobotConstants.INTAKEOUT);
                         outtake = Deposit.START;
                     }
                     break;
@@ -127,23 +189,23 @@ public class tele extends LinearOpMode{
                 case START:
 
                     if (gamepad1.dpad_down) {
-                        robot.armMotor.setTargetPosition(AFTERSPECDROPPOS);
+                        armMotor.setTargetPosition(AFTERSPECDROPPOS);
                         specdepo = Speciman.START;
                     }
                     break;
             }
 
             if (gamepad1.y) {
-                robot.wrist.setPosition(WRISTCENTERPOS);
-                robot.armMotor.setTargetPosition(PREINTAKEARMPOS);
-                robot.intake.setPosition(INTAKEOFF);
-                intake = intakeState.START; //OUTTAKE POSITIONS, DIF HEIGHTS (black frame thing for pixels)
+                wrist.setPosition(RobotConstants.WRISTCENTERPOS);
+                armMotor.setTargetPosition(PREINTAKEARMPOS);
+                intakeservo.setPosition(RobotConstants.INTAKEOFF);
+                intake = intakeState.START;
             }
 
             if (gamepad2.a) {
-                robot.wrist.setPosition(WRISTCENTERPOS);
+                wrist.setPosition(RobotConstants.WRISTCENTERPOS);
             robot.armMotor.setTargetPosition(DRIVEARMPOS);
-                robot.intake.setPosition(INTAKEOFF);
+                robot.intake.setPosition(RobotConstants.INTAKEOFF);
             }
             if (gamepad1.left_bumper) {
                 SpeedAdjust = 4;
@@ -151,8 +213,8 @@ public class tele extends LinearOpMode{
                 SpeedAdjust = 2;
             }
             if (gamepad2.b) {
-                robot.wrist.setPosition(1);
-                robot.armMotor.setTargetPosition(SPECARMPOS);
+                wrist.setPosition(RobotConstants.WRISTSPECPOS);
+                armMotor.setTargetPosition(SPECARMPOS);
                 /// robot.intake.setPosition(0.5);
             }
             if (gamepad2.left_bumper) {
@@ -162,23 +224,21 @@ public class tele extends LinearOpMode{
             }
             if (gamepad2.right_bumper) {
 
-                robot.armMotor.setTargetPosition(50);
+                armMotor.setTargetPosition(50);
                 /// robot.intake.setPosition(0.5);
             }
-//          
+//
             if (gamepad1.x) {//left
-                robot.wrist.setPosition(0.99);
+                wrist.setPosition(0.99);
             }
             if (gamepad1.b) {//right
-                robot.wrist.setPosition(0.01);
+                wrist.setPosition(0.01);
             }
-            
+
             robot.armMotor.setPower(1);
             telemetry.addData("Desired Position", robot.armMotor.getTargetPosition());
             telemetry.addData("Current Position:",robot.armMotor.getCurrentPosition());
             telemetry.update();
-
-
         }
 
     }

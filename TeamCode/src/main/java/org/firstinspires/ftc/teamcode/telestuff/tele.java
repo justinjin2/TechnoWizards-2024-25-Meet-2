@@ -162,47 +162,17 @@ public class tele extends LinearOpMode{
             }
             if (gamepad2.right_bumper) {
 
-                robot.armMotor.setTargetPosition(100);
+                robot.armMotor.setTargetPosition(50);
                 /// robot.intake.setPosition(0.5);
             }
-//            if (gamepad1.a) {//
-//                robot.armMotor.setTargetPosition(200);
-//            }
-//            if (gamepad1.y) {
-//                robot.wrist.setPosition(WRISTCENTERPOS);
-//            }
-
+//          
             if (gamepad1.x) {//left
                 robot.wrist.setPosition(0.99);
             }
             if (gamepad1.b) {//right
                 robot.wrist.setPosition(0.01);
             }
-
-
-//            if (gamepad1.left_trigger >=0.5) {//intake
-//                robot.intake.setPosition(0);
-//            } else if (gamepad1.right_trigger >=0.5) { //outtake
-//                robot.intake.setPosition(1);
-//            }
-//           if (gamepad1.right_trigger ==0 && gamepad1.left_trigger == 0) {
-//                robot.intake.setPosition(0.5);
-//            }
-
-//            if (gamepad1.dpad_up) {
-//                robot.armMotor.setTargetPosition(2950);
-//            } else if (gamepad1.dpad_down) { //intakepos
-//                robot.armMotor.setTargetPosition(4745);
-//            }
-
-            //  maxvalue:4670
-//            if (gamepad1.cross) {
-//                robot.armMotor.setTargetPosition();
-//            }
-//
-//            if (gamepad1.cross) {
-//                robot.wrist.setPosition(0.6);
-//            }
+            
             robot.armMotor.setPower(1);
             telemetry.addData("Desired Position", robot.armMotor.getTargetPosition());
             telemetry.addData("Current Position:",robot.armMotor.getCurrentPosition());

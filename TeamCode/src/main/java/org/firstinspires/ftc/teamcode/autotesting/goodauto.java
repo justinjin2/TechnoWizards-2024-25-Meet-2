@@ -1,41 +1,32 @@
 package org.firstinspires.ftc.teamcode.autotesting;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
+import org.firstinspires.ftc.teamcode.robot.armandintake;
+import org.firstinspires.ftc.teamcode.robot.robot;
 
-@Autonomous (name = "test1", group = "test" )
-public class test extends OpMode {
+@Autonomous (name = "1plus3", group = "test" )
+public class goodauto extends OpMode {
     private Timer pathTimer, opModeTimer, scanTimer;
+   // robot robot = new robot();
 
     ElapsedTime waitTimer1 = new ElapsedTime();
 
-    //Spike Mark Poses
-
-
-//Backdrop Poses
-
-//White stack Poses
 
     private Pose preloadspecimanpose, samplerightpose, samplemiddlepose, sampleleftpose, scoresampleinbasketpose;
 
-    private Pose startPose = new Pose(137, 90, Math.toRadians(180));
+    private Pose startPose = new Pose(137, 41, Math.toRadians(270));
 
     private Follower follower;
+    public armandintake sub;
 
     private Path specimanPreloaddeposit, goToSampleright, goToSamplemiddle, goToSampleleft, depositcycle1, depositcycle2, depositcycle3;
 
@@ -43,26 +34,7 @@ public class test extends OpMode {
 
     //define team element prop and create paths based on the case seen
     public void setBackdropGoalPose(){
-//switch(navigation){
-//    default:
-//    case "left":
-//    spikeMarkGoalPose = new Pose(blueLeftSideLeftSpikeMark.getX() + 0.5, blueLeftSideLeftSpikeMark.getY(), Math.PI/2);
-//    break;
-//    case "middle":
-//    spikeMarkGoalPose = new Pose(blueLeftSideMiddleSpikeMark.getX(), blueLeftSideMiddleSpikeMark.getY()+3, Math.PI/2);
-//    break;
-//    case "right":
-//    spikeMarkGoalPose = new Pose(blueLeftSideRightSpikeMark.getX(), blueLeftSideRightSpikeMark.getY(), Math.PI/2);
-//    break;
-
-// Left
-
-
-        preloadspecimanpose = new Pose(110, 69, Math.toRadians(180));
-
-
-
-
+        preloadspecimanpose = new Pose(110, 62, Math.toRadians(0));
 
     }
     public void buildPaths() {
@@ -81,12 +53,13 @@ public class test extends OpMode {
         switch(pathState){
             case 10: //First Scored Path
                 follower.followPath(specimanPreloaddeposit);
+
                 //When starting to move instantly moves to case 11
                 setPathState(11);
                 break;
             case 11: //While moving check how far away from wall and start interpolating
 
-                specimanPreloaddeposit.setConstantHeadingInterpolation(preloadspecimanpose.getHeading());
+                specimanPreloaddeposit.setLinearHeadingInterpolation(startPose.getHeading(),preloadspecimanpose.getHeading(),0.5);
                 setPathState(24);
                 break;
 
@@ -116,12 +89,15 @@ public class test extends OpMode {
 
     @Override
     public void init() {
+        sub = new armandintake(hardwareMap);
         pathTimer = new Timer();
         opModeTimer = new Timer();
         scanTimer = new Timer();
         opModeTimer.resetTimer();
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
+
+
     }
 
     @Override

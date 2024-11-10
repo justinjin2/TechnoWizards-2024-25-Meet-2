@@ -111,7 +111,7 @@ public class robot {
         rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+       // armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
 }

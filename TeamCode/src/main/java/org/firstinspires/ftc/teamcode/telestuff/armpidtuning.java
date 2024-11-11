@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //@Config
 //@TeleOp
-/*
+
 public class armpidtuning extends OpMode {
     private PIDController controller;
 
@@ -52,4 +52,3 @@ public class armpidtuning extends OpMode {
 }
 
 }
-*/

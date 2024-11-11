@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.robot.robot;
@@ -27,6 +28,12 @@ public class armandintake {
     double INTAKEIN = 0;
     double INTAKEOUT = 1;
     double INTAKEOFF = 0.5;
+    public DcMotorEx armMotor;
+
+
+
+    public Servo wrist;
+    public Servo intake;
 
 
     /** This is the constructor for the subsystem, it maps the servos to the hardwareMap.
@@ -35,15 +42,24 @@ public class armandintake {
      * and then call the below constructor in the init() method. */
 
     public armandintake(HardwareMap hardwareMap) {
-        robot.init(hardwareMap);
+        armMotor = hardwareMap.get(DcMotorEx.class, "arm");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        intake = hardwareMap.get(Servo.class, "intake");
+
     }
 
     //------------------------------Close Claws------------------------------//
     public void armspecpos() {
-                robot.armMotor.setPower(1);
-                robot.armMotor.setTargetPosition(SPECARMPOS);
-                robot.armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.wrist.setPosition(1);
+                armMotor.setPower(1);
+                armMotor.setTargetPosition(SPECARMPOS);
+               armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+               wrist.setPosition(1);
+    }
+    public void armspecppull() {
+        armMotor.setPower(1);
+        armMotor.setTargetPosition(AFTERSPECDROPPOS);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wrist.setPosition(1);
     }
 
 //    public void closeRClaw() {

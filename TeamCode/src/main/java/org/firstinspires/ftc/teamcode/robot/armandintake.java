@@ -18,12 +18,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class armandintake {
     robot robot = new robot();
 
-    int DEPOSITARMPOS = 2970;
+    int DEPOSITARMPOS = 2900;
     int PREINTAKEARMPOS = 4225;
     int DRIVEARMPOS = 1000;
     int INTAKEARMPOS = 4735;
     int SPECARMPOS = 2900;
-    int AFTERSPECDROPPOS = 3200;
+    int AFTERSPECDROPPOS = 3400;
     double WRISTCENTERPOS = 0.512;
     double INTAKEIN = 0;
     double INTAKEOUT = 1;
@@ -61,6 +61,33 @@ public class armandintake {
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wrist.setPosition(1);
     }
+    public void armintakeon() {
+
+        wrist.setPosition(WRISTCENTERPOS);
+        armMotor.setTargetPosition(INTAKEARMPOS);
+        intake.setPosition(INTAKEIN);
+        armMotor.setPower(1);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    }
+
+    public void armsampledepopos() {
+        armMotor.setPower(1);
+        armMotor.setTargetPosition(DEPOSITARMPOS);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wrist.setPosition(WRISTCENTERPOS);
+
+
+    }
+    public void stopintake() {
+        intake.setPosition(INTAKEOFF);
+
+    }
+    public void outtake() {
+        intake.setPosition(INTAKEOUT);
+
+    }
+
 
 //    public void closeRClaw() {
 //        clawR.setPosition(RobotConstants.closedR);

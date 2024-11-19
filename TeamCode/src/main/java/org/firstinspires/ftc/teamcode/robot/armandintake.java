@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class armandintake {
     robot robot = new robot();
 
-    int DEPOSITARMPOS = 2900;
+    int DEPOSITARMPOS = 2800;
     int PREINTAKEARMPOS = 4225;
     int DRIVEARMPOS = 1000;
     int INTAKEARMPOS = 4735;
@@ -53,7 +53,7 @@ public class armandintake {
                 armMotor.setPower(1);
                 armMotor.setTargetPosition(SPECARMPOS);
                armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-               wrist.setPosition(1);
+               wrist.setPosition(0.01);
     }
     public void armspecppull() {
         armMotor.setPower(1);

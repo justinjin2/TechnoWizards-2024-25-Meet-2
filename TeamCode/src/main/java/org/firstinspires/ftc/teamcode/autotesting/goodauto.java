@@ -46,11 +46,11 @@ public class goodauto extends OpMode {
     public void setBackdropGoalPose(){
         preloadspecimanpose = new Pose(115, 64, Math.toRadians(0));
         pullspecimanpose = new Pose(125, 64, Math.toRadians(0));
-        samplerightpose = new Pose(107, 44, Math.toRadians(70));
+        samplerightpose = new Pose(103, 44, Math.toRadians(70));
         scooprightsamplepose = new Pose(108, 44, Math.toRadians(65));
-        scoresampleinbasketpose = new Pose(116.5, 23.5, Math.toRadians(140));
+        scoresampleinbasketpose = new Pose(117.5, 23, Math.toRadians(140));
         samplemiddlepose = new Pose(109, 33, Math.toRadians(65));
-        scoresampleinbasketpose2 = new Pose(119, 22.5, Math.toRadians(140));
+        scoresampleinbasketpose2 = new Pose(120, 21.5, Math.toRadians(140));
         sampleleftpose = new Pose(102, 28.5, Math.toRadians(85));
         sampleleftsweeppose = new Pose(101.3, 25.6, Math.toRadians(85));
         parkpose = new Pose(75, 45, Math.toRadians(270));
@@ -58,7 +58,10 @@ public class goodauto extends OpMode {
     }
     public void buildPaths() {
         Point tosamplerightmidpoint;
-        tosamplerightmidpoint = new Point(128, 50, Point.CARTESIAN);
+        tosamplerightmidpoint = new Point(115, 59, Point.CARTESIAN);
+        Point tosamplerightmidpoint2;
+        tosamplerightmidpoint2 = new Point(100, 38, Point.CARTESIAN);
+       // tosamplerightmidpoint = new Point(128, 50, Point.CARTESIAN);
         Point middlescoremidpoint;
         middlescoremidpoint = new Point(124, 43, Point.CARTESIAN);
         Point leftscoremidpoint;
@@ -123,7 +126,7 @@ public class goodauto extends OpMode {
                 break;
             case 17: //While moving check how far away from wall and start interpolating
 
-                goToSampleright.setLinearHeadingInterpolation(pullspecimanpose.getHeading(), samplerightpose.getHeading(),0.1);
+                goToSampleright.setLinearHeadingInterpolation(pullspecimanpose.getHeading(), samplerightpose.getHeading(),0.3);
                 waitTimer1.reset();
                 setPathState(18);
                 break;
@@ -138,7 +141,7 @@ public class goodauto extends OpMode {
                 break;
             case 21: //While moving check how far away from wall and start interpolating
 
-                if(!follower.isBusy() && waitTimer1.seconds() >= 2) {
+                if(!follower.isBusy() && waitTimer1.seconds() >= 1) {
 
                     sub.armsampledepopos();
                     setPathState(22);
@@ -280,7 +283,7 @@ public class goodauto extends OpMode {
 
                 break;
             case 41: //While moving check how far away from wall and start interpolating
-
+                sub.stopintake();
                 park.setLinearHeadingInterpolation(scoresampleinbasketpose2.getHeading(),parkpose.getHeading(),0.3);
 
                 setPathState(15);

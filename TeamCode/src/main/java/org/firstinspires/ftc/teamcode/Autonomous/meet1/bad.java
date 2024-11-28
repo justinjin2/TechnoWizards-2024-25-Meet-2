@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autotesting;
+package org.firstinspires.ftc.teamcode.Autonomous.meet1;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
-import org.firstinspires.ftc.teamcode.robot.robot;
+import org.firstinspires.ftc.teamcode.Hardware.meet1.robot;
 
 
 

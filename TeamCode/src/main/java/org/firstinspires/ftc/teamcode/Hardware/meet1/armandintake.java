@@ -1,10 +1,9 @@
 
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.Hardware.meet1;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.robot.robot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /** This is a subsystem, for the claw of our robot

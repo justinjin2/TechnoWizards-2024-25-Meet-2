@@ -30,17 +30,26 @@ public class Claw {
         servo2.setPosition(servo2Offset);
         claw.setPosition(CLOSE_SERVO);
     }
+
     public void wristForward(double incremental){
         servo1Offset -= incremental;
         servo2Offset += incremental;
         servo1.setPosition(servo1Offset);
         servo2.setPosition(servo2Offset);
     }
+
     public void wristBackward(double incremental){
         servo1Offset += incremental;
         servo2Offset -= incremental;
         servo1.setPosition(servo1Offset);
         servo2.setPosition(servo2Offset);
+    }
+
+    public void wristGoCenter(){
+        servo1Offset = MID_SERVO;
+        servo2Offset = MID_SERVO;
+        servo1.setPosition(MID_SERVO);
+        servo2.setPosition(MID_SERVO);
     }
     public void wristLeft(double incremental){
         servo1Offset -= incremental;
@@ -60,5 +69,6 @@ public class Claw {
     public void clawOpen(){
         claw.setPosition(OPEN_SERVO);
     }
+
 
 }

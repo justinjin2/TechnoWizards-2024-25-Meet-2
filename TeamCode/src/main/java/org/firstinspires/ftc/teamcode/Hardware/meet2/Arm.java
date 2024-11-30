@@ -11,6 +11,8 @@ public class Arm {
     int maximumExtension = 1865;
     public int incremental = 28;
     public int velocity = 2000;
+    public int extensionMotorPower = 1;
+
     HardwareMap hwMap = null;
 
     public DcMotorEx pivotMotor;
@@ -33,6 +35,13 @@ public class Arm {
 
         pivotMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         extensionMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+    }
+    public void initRunExtMotor(int power) {
+        //pivotMotor.setTargetPosition(0);
+        extensionMotor.setTargetPosition(0);
+        extensionMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        extensionMotor.setPower(power);
 
     }
     public void movePivotMotor(int position, int velocity){
@@ -59,7 +68,7 @@ public class Arm {
             pivotMotor.setVelocity(velocity);
 
     }
-    public void moveIncrementExtensionMotor(int incremental, int velocity){
+    public void moveIncrementExtensionMotor(int incremental, int power){
         int currentPosition = extensionMotor.getCurrentPosition();
         int position = currentPosition + incremental;
         if (position < minimumExtension){
@@ -70,6 +79,6 @@ public class Arm {
             extensionMotor.setTargetPosition(position);
         }
         extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        extensionMotor.setVelocity(velocity);
+        extensionMotor.setPower(power);
     }
 }

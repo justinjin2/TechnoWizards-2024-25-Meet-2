@@ -1,26 +1,20 @@
 package org.firstinspires.ftc.teamcode.TeleOp.meet2;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Claw;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.DriveTrain;
-import org.firstinspires.ftc.teamcode.TeleOp.meet1.meet1tele;
-
 /**
- * This is the TeleOpEnhancements OpMode. It is an example usage of the TeleOp enhancements that
- * Pedro Pathing is capable of.
+
  *
- * @author Anyi Lin - 10158 Scott's Bots
- * @author Aaron Yang - 10158 Scott's Bots
- * @author Harrison Womack - 10158 Scott's Bots
- * @version 1.0, 3/21/2024
+
  */
 @TeleOp(name = "Meet2TeleOp", group = "Test")
 public class Meet2TeleOp extends LinearOpMode {
@@ -29,7 +23,11 @@ public class Meet2TeleOp extends LinearOpMode {
     DriveTrain driveTrain = new DriveTrain();
     double SpeedAdjust = 1;
     public Telemetry telemetryA;
-    private FiniteState finiteState = FiniteState.IDLE;
+    private FiniteState finiteState = FiniteState.INTAKE_GROUND_START;
+    ElapsedTime loopTimer;
+    ElapsedTime waitingTimer;
+    ElapsedTime intakeTimer;
+    ElapsedTime clawTimer;
     //telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
@@ -41,7 +39,17 @@ public class Meet2TeleOp extends LinearOpMode {
         arm.init(hardwareMap);
         claw.init(hardwareMap);
         driveTrain.init(hardwareMap);
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad previousGamepad1 = new Gamepad();
+        Gamepad currentGamepad2 = new Gamepad();
+        Gamepad previousGamepad2 = new Gamepad();
 
+        loopTimer = new ElapsedTime();
+        waitingTimer = new ElapsedTime();
+        intakeTimer = new ElapsedTime();
+        clawTimer = new ElapsedTime();
+
+        telemetry.addData("Robot State", "Initialized");
         /**
          * This runs the OpMode. This is only drive control with Pedro Pathing live centripetal force
          * correction.
@@ -52,55 +60,118 @@ public class Meet2TeleOp extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested()) {
             // YOUR WORK
+            /*
+            Define Drivetrain based on X Y keys.
+             */
+            loopTimer.reset();
+
             driveTrain.rightRear.setPower((-gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) / SpeedAdjust);
             driveTrain.leftRear.setPower((-gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) / SpeedAdjust);
             driveTrain.rightFront.setPower((-gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) / SpeedAdjust);
             driveTrain.leftFront.setPower((-gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) / SpeedAdjust);
 
-            telemetry();
+            currentGamepad1.copy(gamepad1);
+            currentGamepad2.copy(gamepad2);
 
             switch (finiteState) {
-                case INTAKE_GROUND_START:{
-                    if (gamepad1.a) {
+                case INTAKE_READY:{
+                    if (currentGamepad1.a && !previousGamepad1.a) {
                         arm.pivotMotor.setTargetPosition(0);
+                        finiteState = FiniteState.INTAKE_GROUND_READY; //OUTTAKE POSITIONS, DIF HEIGHTS (black frame thing for pixels)
+                    }
+                    break;
+                }
+                case INTAKE_GROUND_READY:{
+                    if (arm.pivotMotor.getCurrentPosition() >= 0 * 0.9) { //90% of desired position
                         arm.extensionMotor.setTargetPosition(0);
                         claw.servo1.setPosition(0);
                         claw.servo2.setPosition(0);
-                        claw.claw.setPosition(claw.OPEN_SERVO);
-                        finiteState = finiteState.INTAKE_GROUND; //OUTTAKE POSITIONS, DIF HEIGHTS (black frame thing for pixels)
+                        claw.clawOpen();
+                        finiteState = FiniteState.INTAKE_GROUND;
+                        intakeTimer.reset();
                     }
                     break;
                 }
                 case INTAKE_GROUND:{
-                    if (gamepad1.right_bumper){
-                        claw.claw.setPosition(claw.CLOSE_SERVO);
-                        claw.servo1.setPosition(0);
-                        claw.servo2.setPosition(0);
-                        arm.extensionMotor.setTargetPosition(0);
-                        arm.pivotMotor.setTargetPosition(0);
-                        finiteState = finiteState.INTAKE_GROUND_END; //OUTTAKE POSITIONS, DIF HEIGHTS (black frame thing for pixels)
+                    if (intakeTimer.milliseconds() > 100){
+                        if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
+                        claw.clawClose();
+                        finiteState = FiniteState.INTAKE_GROUND_END;
+                        intakeTimer.reset();
+                        }
                     }
                     break;
                 }
                 case INTAKE_GROUND_END:{
-                    //set delivery into ready state
+                    if (intakeTimer.milliseconds() > 100) {
+                        claw.wristGoCenter();
+                        arm.extensionMotor.setTargetPosition(0);
+                        arm.pivotMotor.setTargetPosition(0);
+                        finiteState = FiniteState.DELIVERY_START;
+                        intakeTimer.reset();
+                    }
+                }
+            }
+
+
+            switch(finiteState){
+                case DELIVERY_START:{
+                    //high bucket
+                    if (intakeTimer.milliseconds() > 100) {
+                        if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper) {
+                            arm.pivotMotor.setTargetPosition(0);
+                            arm.extensionMotor.setTargetPosition(0);
+                            claw.servo1.setPosition(0);
+                            claw.servo2.setPosition(0);
+                            finiteState = FiniteState.DELIVERY_BUCKET;
+                            clawTimer.reset();
+                        }
+                        //low bucket
+                        if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
+                            arm.pivotMotor.setTargetPosition(0);
+                            arm.extensionMotor.setTargetPosition(0);
+                            claw.servo1.setPosition(0);
+                            claw.servo2.setPosition(0);
+                            finiteState = FiniteState.DELIVERY_BUCKET;
+                            clawTimer.reset();
+                        }
+                    }
+                    break;
+                }
+                case DELIVERY_BUCKET: {
+                    if (clawTimer.milliseconds() > 100){
+                        if (currentGamepad1.left_bumper && ! previousGamepad1.left_bumper) {
+                        claw.clawOpen();
+                        finiteState = FiniteState.DELIVERY_END;
+                        clawTimer.reset();
+                        }
+                    }
+                    break;
+                }
+                case DELIVERY_END:{
+                    if (clawTimer.milliseconds() > 100){
+                        claw.servo1.setPosition(0);
+                        claw.servo2.setPosition(0);
+                        arm.extensionMotor.setTargetPosition(0);
+                        arm.pivotMotor.setTargetPosition(0);
+                        finiteState = FiniteState.INTAKE_GROUND_START;
+                    }
+                }
+                case DELIVERY_SPECIMEN:{
+                    if (currentGamepad2.a && !previousGamepad2.a){
+                        arm.pivotMotor.setTargetPosition(0);
+                        claw.clawOpen();
+                        arm.extensionMotor.setTargetPosition(0);
+                        claw.servo1.setPosition(0);
+                        claw.servo2.setPosition(0);
+                    }
                 }
             }
         }
+        previousGamepad1.copy(currentGamepad1);
+        previousGamepad2.copy(currentGamepad2);
+
+        telemetry.addData("Loop Timer", loopTimer.milliseconds());
+        telemetry.update();
     }
-        public void telemetry() {
-            telemetryA.addData("Robot State", "initialization");
-//            telemetryA.addData("Outtake State", outtakeState);
-//            telemetryA.addData("Transfer State", transferState);
-//            telemetryA.addData("Lift Position", liftEncoder.getCurrentPosition());
-//            telemetryA.addData("Lift Target Position", liftTargetPosition);
-//            telemetryA.addData("Lift Current", liftEncoder.getCurrent(CurrentUnit.MILLIAMPS));
-//            telemetryA.addData("Outtake Wrist Offset", outtakeWristOffset);
-//            telemetryA.addData("Intake Arm Position", leftIntakeArm.getPosition());
-//            telemetryA.addData("Intake Arm Target Position", intakeArmTargetPosition);
-//            telemetryA.addData("Intake Arm Target State", intakeArmTargetState);
-//            telemetryA.addData("Intake Arm PWM Status", leftIntakeArm.getController().getPwmStatus());
-//            telemetryA.addData("Intake Arm Connection Info", leftIntakeArm.getConnectionInfo());
-            telemetryA.update();
-        }
 }

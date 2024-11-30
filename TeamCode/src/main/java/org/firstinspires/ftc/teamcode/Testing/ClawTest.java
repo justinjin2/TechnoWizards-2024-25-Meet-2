@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Hardware.meet2.Claw;
 @Disabled
 public class ClawTest extends LinearOpMode {
     Claw claw = new Claw();
-    double SERVO_INCREMENT = 0.02;
+    double SERVO_INCREMENT = 0.01;
     // Declare OpMode members.
 
     @Override
@@ -56,6 +56,9 @@ public class ClawTest extends LinearOpMode {
                 claw.wristRight(SERVO_INCREMENT);
             }
 
+            if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+                claw.wristGoCenter();
+            }
 
             telemetry.addData("Claw position",  "Offset = %.2f", claw.clawOffset);
             telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1Offset);

@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode.Hardware.meet2;
 
 import com.qualcomm.robotcore.hardware.Servo;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 public class Claw {
     HardwareMap hwMap = null;
 
-    public Servo servo1 = null;
-    public Servo servo2 = null;
-    public Servo claw = null;
+    public ServoImplEx servo1 = null;
+    public ServoImplEx servo2 = null;
+    public ServoImplEx claw = null;
     public static final double MID_SERVO = 0.5;
     public static final int CLOSE_SERVO = 0;
     public static final int OPEN_SERVO = 1;
@@ -20,9 +22,9 @@ public class Claw {
     public void init(HardwareMap hwMap) {
         this.hwMap = hwMap;
 
-        servo1 = hwMap.get(Servo.class, "servo1");
-        servo2 = hwMap.get(Servo.class, "servo2");
-        claw = hwMap.get(Servo.class, "claw");
+        servo1 = hwMap.get(ServoImplEx.class, "servo1");
+        servo2 = hwMap.get(ServoImplEx.class, "servo2");
+        claw = hwMap.get(ServoImplEx.class, "claw");
 
         servo1.setPosition(servo1Offset);
         servo2.setPosition(servo2Offset);
@@ -54,10 +56,9 @@ public class Claw {
     }
     public void clawClose(){
         claw.setPosition(CLOSE_SERVO);
-        clawOffset = CLOSE_SERVO;
     }
     public void clawOpen(){
         claw.setPosition(OPEN_SERVO);
-        clawOffset = OPEN_SERVO;
     }
+
 }

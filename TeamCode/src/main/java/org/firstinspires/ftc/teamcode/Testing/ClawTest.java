@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Claw;
 
 @TeleOp(name="ClawTest", group="Test")
-@Disabled
+//@Disabled
 public class ClawTest extends LinearOpMode {
     Claw claw = new Claw();
     double SERVO_INCREMENT = 0.01;
@@ -18,14 +18,16 @@ public class ClawTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         claw.init(hardwareMap);
-        telemetry.addData("Status", "Initialized");
+        claw.clawClose();
+        claw.wristCenter();
         telemetry.update();
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
 
-        telemetry.addData("Claw position",  "Offset = %.2f", claw.clawOffset);
-        telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1Offset);
-        telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2Offset);
+        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Claw position",  "Offset = %.2f", claw.claw.getPosition());
+        telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1.getPosition());
+        telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2.getPosition());
         telemetry.update();
 
         waitForStart();
@@ -33,19 +35,19 @@ public class ClawTest extends LinearOpMode {
         while (opModeIsActive()) {
             currentGamepad1.copy(gamepad1);
             if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
-                claw.clawClose();
-            }
-
-            if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
                 claw.clawOpen();
             }
 
+            if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
+                claw.clawClose();
+            }
+
             if (currentGamepad1.y && !previousGamepad1.y) {
-                claw.wristForward(SERVO_INCREMENT);
+                claw.wristUp();
             }
 
             if (currentGamepad1.a && !previousGamepad1.a) {
-                claw.wristBackward(SERVO_INCREMENT);
+                claw.wristDown();
             }
 
             if (currentGamepad1.x && !previousGamepad1.x) {
@@ -57,12 +59,12 @@ public class ClawTest extends LinearOpMode {
             }
 
             if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                claw.wristGoCenter();
+                claw.wristCenter();
             }
 
-            telemetry.addData("Claw position",  "Offset = %.2f", claw.clawOffset);
-            telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1Offset);
-            telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2Offset);
+            telemetry.addData("Claw position",  "Offset = %.2f", claw.claw.getPosition());
+            telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1.getPosition());
+            telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2.getPosition());
             telemetry.update();
             previousGamepad1.copy(currentGamepad1);
             sleep(50);

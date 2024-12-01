@@ -23,7 +23,7 @@ public class Meet2TeleOp extends LinearOpMode {
     DriveTrain driveTrain = new DriveTrain();
     double SpeedAdjust = 1;
     public Telemetry telemetryA;
-    private FiniteState finiteState = FiniteState.INTAKE_GROUND_START;
+    private FiniteState finiteState = FiniteState.INTAKE_READY;
     ElapsedTime loopTimer;
     ElapsedTime waitingTimer;
     ElapsedTime intakeTimer;
@@ -104,7 +104,7 @@ public class Meet2TeleOp extends LinearOpMode {
                 }
                 case INTAKE_GROUND_END:{
                     if (intakeTimer.milliseconds() > 100) {
-                        claw.wristGoCenter();
+                        claw.wristCenter();
                         arm.extensionMotor.setTargetPosition(0);
                         arm.pivotMotor.setTargetPosition(0);
                         finiteState = FiniteState.DELIVERY_START;

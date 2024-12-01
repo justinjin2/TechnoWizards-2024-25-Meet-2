@@ -6,12 +6,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Arm {
     int minimumPivot = 0;
-    int maximumPivot = 1865;
+    int maximumPivot = 2650;
     int minimumExtension = 0;
-    int maximumExtension = 1865;
-    public int incremental = 28;
+    int maximumExtension = 1750;
+    public int incremental = 50;
     public int velocity = 2000;
-    public int extensionMotorPower = 1;
+    public int motorPower = 1;
 
     HardwareMap hwMap = null;
 
@@ -38,11 +38,14 @@ public class Arm {
 
     }
     public void initRunExtMotor(int power) {
-        //pivotMotor.setTargetPosition(0);
         extensionMotor.setTargetPosition(0);
         extensionMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         extensionMotor.setPower(power);
-
+    }
+    public void initRunPivotMotor(int power) {
+        pivotMotor.setTargetPosition(0);
+        pivotMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        pivotMotor.setPower(power);
     }
     public void movePivotMotor(int position, int velocity){
         pivotMotor.setTargetPosition(position);
@@ -54,7 +57,7 @@ public class Arm {
         extensionMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         extensionMotor.setVelocity(velocity);
     }
-    public void moveIncrementPivotMotor(int incremental, int velocity){
+    public void moveIncrementPivotMotor(int incremental, int power){
         int currentPosition = pivotMotor.getCurrentPosition();
         int position = currentPosition + incremental;
         if (position < minimumPivot){
@@ -65,7 +68,7 @@ public class Arm {
             pivotMotor.setTargetPosition(position);
         }
             pivotMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            pivotMotor.setVelocity(velocity);
+            pivotMotor.setPower(power);
 
     }
     public void moveIncrementExtensionMotor(int incremental, int power){
@@ -81,4 +84,11 @@ public class Arm {
         extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         extensionMotor.setPower(power);
     }
+    public void resetMotor() {
+        pivotMotor.setPower(0);
+        extensionMotor.setPower(0);
+        pivotMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        extensionMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+    }
 }
+

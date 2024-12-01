@@ -20,25 +20,25 @@ Arm arm = new Arm();
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
         arm.init(hardwareMap);
-        // Wait for the game to start (driver presses START)+
-        arm.initRunExtMotor(arm.extensionMotorPower);
-
+        arm.resetMotor();
+        arm.initRunExtMotor(arm.motorPower);
+//        arm.initRunPivotMotor(arm.motorPower);
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             currentGamepad1.copy(gamepad1);
             if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up){
-                arm.moveIncrementPivotMotor(arm.incremental, arm.velocity);
+                arm.moveIncrementPivotMotor(arm.incremental, arm.motorPower);
             }
             if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down){
-                arm.moveIncrementPivotMotor(-arm.incremental, arm.velocity);
+                arm.moveIncrementPivotMotor(-arm.incremental, arm.motorPower);
             }
             if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right){
-                arm.moveIncrementExtensionMotor(arm.incremental, arm.extensionMotorPower);
+                arm.moveIncrementExtensionMotor(arm.incremental, arm.motorPower);
             }
             if (currentGamepad1.dpad_left && !previousGamepad1.dpad_left){
-                arm.moveIncrementExtensionMotor(-arm.incremental, arm.extensionMotorPower);
+                arm.moveIncrementExtensionMotor(-arm.incremental, arm.motorPower);
             }
             previousGamepad1.copy(currentGamepad1);
             // Show the elapsed game time and wheel power.

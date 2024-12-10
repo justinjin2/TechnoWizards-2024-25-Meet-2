@@ -77,6 +77,7 @@ public class PinpointLocalizer extends Localizer {
         //TODO: If you would like to use your own odometry pods input the ticks per mm in the commented part below
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         //odo.setEncoderResolution(13.26291192);
+
         //TODO: Set encoder directions
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 

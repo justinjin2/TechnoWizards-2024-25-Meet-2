@@ -18,8 +18,9 @@ public class ClawTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         claw.init(hardwareMap);
-        claw.clawClose();
-        claw.wristCenter();
+        claw.clawOpen();
+        claw.servo1.setPosition(0.5);
+        claw.servo2.setPosition(0.5);
         telemetry.update();
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();

@@ -25,6 +25,8 @@ Arm arm = new Arm();
 //        arm.initRunPivotMotor(arm.motorPower);
         waitForStart();
 
+        arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             currentGamepad1.copy(gamepad1);
@@ -40,6 +42,23 @@ Arm arm = new Arm();
             if (currentGamepad1.dpad_left && !previousGamepad1.dpad_left){
                 arm.moveIncrementExtensionMotor(-arm.incremental, arm.motorPower);
             }
+            if (currentGamepad1.a && !previousGamepad1.a){
+                arm.moveExtensionMotor(arm.maximumIntakeExtension, arm.motorPower);
+            }
+            if (currentGamepad1.b && !previousGamepad1.b){
+                arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
+                sleep(500);
+                arm.moveExtensionMotor(arm.maximumDeliveryExtension, arm.motorPower);
+            }
+            if (gamepad1.left_stick_y < 0){
+                arm.moveExtensionJoystickOut(arm.incrementalJoystickExtension, arm.motorPower);
+                arm.movePivotJoystickDown(arm.incrementalJoystickPivot, arm.motorPower);
+            }
+            if (gamepad1.left_stick_y > 0){
+                arm.moveExtensionJoystickIn(arm.incrementalJoystickExtension, arm.motorPower);
+                arm.movePivotJoystickUp(arm.incrementalJoystickPivot, arm.motorPower);
+            }
+
             previousGamepad1.copy(currentGamepad1);
             // Show the elapsed game time and wheel power.
             telemetry.addData("Arm Motor Position", arm.pivotMotor.getCurrentPosition());

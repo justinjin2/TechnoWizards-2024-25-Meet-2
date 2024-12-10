@@ -11,11 +11,14 @@ public class Claw {
     public ServoImplEx servo1 = null;
     public ServoImplEx servo2 = null;
     public ServoImplEx claw = null;
-    public static final double MID_SERVO = 0.5;
-    public static final double CLOSE_SERVO = 0.18;
-    public static final double OPEN_SERVO = 0.48;
+    public static final double MID_SERVO = 0.57;
+    public static final double CLOSE_SERVO = 0.28;
+    public static final double OPEN_SERVO = 0.51;
     public static final double WRIST_UP = 0.97;
     public static final double WRIST_DOWN = 0.23;
+    public static final double WRIST_DELIVER = 0.8;
+    public static final double SPECIMEN_DELIVER_SERVO = 0.23;
+    public static final double SPECIMEN_READY_SERVO = 0.93;
 
     public void init(HardwareMap hwMap) {
         this.hwMap = hwMap;
@@ -25,7 +28,7 @@ public class Claw {
         claw = hwMap.get(ServoImplEx.class, "claw");
     }
 
-    public void wristForward(double incremental, double position){
+    public void wristForward(double incremental){
         double position1 = servo1.getPosition();
         double position2 = servo2.getPosition();
         position1 += incremental;
@@ -73,9 +76,22 @@ public class Claw {
         servo1.setPosition(position1);
         servo2.setPosition(position2);
     }
+    public void wristDeliver(){
+        servo1.setPosition(WRIST_DELIVER);
+        servo2.setPosition(WRIST_DELIVER);
+    }
+    public void wristReadySpecimen(){
+        servo1.setPosition(SPECIMEN_READY_SERVO);
+        servo2.setPosition(SPECIMEN_READY_SERVO);
+    }
+    public void wristDeliverSpecimen(){
+        servo1.setPosition(SPECIMEN_DELIVER_SERVO);
+        servo2.setPosition(SPECIMEN_DELIVER_SERVO);
+    }
     public void clawClose(){
         claw.setPosition(CLOSE_SERVO);
     }
+    public void clawCenter() {claw.setPosition(0.5);}
     public void clawOpen(){
         claw.setPosition(OPEN_SERVO);
     }

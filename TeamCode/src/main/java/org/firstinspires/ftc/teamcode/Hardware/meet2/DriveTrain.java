@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstan
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
@@ -18,6 +19,10 @@ public class DriveTrain {
     public DcMotorEx leftRear;
     public DcMotorEx rightFront;
     public DcMotorEx rightRear;
+    public double Speed, Strafe, Turn;
+    public double leftFrontPower, leftRearPower, rightFrontPower, rightRearPower;
+    public double leftSpeedAdjust = 1;
+    public double rightSpeedAdjust = 1;
 
     public void init(HardwareMap hwMap) {
         this.hwMap = hwMap;
@@ -28,8 +33,8 @@ public class DriveTrain {
         rightFront = hwMap.get(DcMotorEx.class, "rightFront");
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
-        leftRear.setDirection(DcMotor.Direction.REVERSE);
-        rightRear.setDirection(DcMotor.Direction.FORWARD);
+        leftRear.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

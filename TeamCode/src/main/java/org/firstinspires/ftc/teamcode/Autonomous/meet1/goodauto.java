@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.meet1;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import org.firstinspires.ftc.teamcode.Hardware.meet1.armandintake;
-
+@Disabled
 @Autonomous (name = "1plus3", group = "test" )
 public class goodauto extends OpMode {
     private Timer pathTimer, opModeTimer, scanTimer;

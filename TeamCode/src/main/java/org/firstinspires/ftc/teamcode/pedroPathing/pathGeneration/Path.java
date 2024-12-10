@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * @version 1.0, 3/10/2024
  */
 public class Path {
+    public Object setConstantHeading;
     private BezierCurve curve;
 
     private double startHeading;

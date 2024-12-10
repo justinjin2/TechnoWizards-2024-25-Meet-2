@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.meet1;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Hardware.meet1.robot;
 
 
 
-
+@Disabled
 @Autonomous (name = "bad", group = "test" )
 public class bad extends OpMode {
     private Timer pathTimer, opModeTimer, scanTimer;

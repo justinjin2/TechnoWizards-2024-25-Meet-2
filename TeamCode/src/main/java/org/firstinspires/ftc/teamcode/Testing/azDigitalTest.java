@@ -24,7 +24,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 @TeleOp(name = "azDigitalTest", group = "Test")
 //@Disabled
 public class azDigitalTest extends LinearOpMode {
-    DigitalChannel touchSensor = null;  // Touch sensor Object
+    DigitalChannel extensionTouch = null;
+    DigitalChannel pivotTouch = null;// Touch sensor Object
     //public DcMotor  arm     = null;
 
     @Override
@@ -33,8 +34,8 @@ public class azDigitalTest extends LinearOpMode {
         // get a reference to our touchSensor object.
         //arm   = hardwareMap.get(DcMotor.class, "arm");
 
-        touchSensor = hardwareMap.get(DigitalChannel.class, "Sensor_touch");
-
+        extensionTouch = hardwareMap.get(DigitalChannel.class, "extensionTouch");
+        pivotTouch = hardwareMap.get(DigitalChannel.class, "pivotTouch");
 
         // wait for the start button to be pressed.
         waitForStart();
@@ -42,8 +43,10 @@ public class azDigitalTest extends LinearOpMode {
         // while the OpMode is active, loop and read whether the sensor is being pressed.
         // Note we use opModeIsActive() as our loop conditiont because it is an interruptible method.
         while (opModeIsActive()) {
-                telemetry.addData("Touch Sensor", touchSensor.getState());
-                //arm.setPower(1);
+                telemetry.addData("Extension Touch", extensionTouch.getState());
+                telemetry.addData("PivotTouch", pivotTouch.getState());
+
+            //arm.setPower(1);
 
                 // send the info back to driver station using telemetry function.
 

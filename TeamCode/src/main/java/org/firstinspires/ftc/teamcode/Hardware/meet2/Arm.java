@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.Hardware.meet2;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Arm {
     public int minimumPivot = 0;
@@ -30,11 +32,20 @@ public class Arm {
     public DcMotorEx pivotMotor;
     public DcMotorEx extensionMotor;
 
+    public ElapsedTime intakeTimer;
+
+    public DigitalChannel extensionTouch = null;
+    public DigitalChannel pivotTouch = null;
+
+    Claw claw = new Claw();
+
     public void init(HardwareMap hwMap) {
         this.hwMap = hwMap;
 
         pivotMotor = hwMap.get(DcMotorEx.class, "pivotMotor");
         extensionMotor = hwMap.get(DcMotorEx.class, "extensionMotor");
+        extensionTouch = hwMap.get(DigitalChannel.class, "extensionTouch");
+        pivotTouch = hwMap.get(DigitalChannel.class, "pivotTouch");
 
         pivotMotor.setDirection(DcMotorEx.Direction.FORWARD);
         extensionMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -51,6 +62,7 @@ public class Arm {
         pivotMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         extensionMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
+        claw.init(hwMap);
     }
     public void initRunExtMotor(int power) {
         extensionMotor.setTargetPosition(0);
@@ -140,6 +152,42 @@ public class Arm {
         extensionMotor.setPower(0);
         pivotMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         extensionMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void moveExtensionTouch(){
+        extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeTimer.reset();
+            while ((intakeTimer.milliseconds() < 500)){
+                extensionMotor.setPower(-0.5);
+        }
+    }
+    public void movePivotTouch(int position, double velocity){
+        extensionMotor.setTargetPosition(position);
+        extensionMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        extensionMotor.setPower(velocity);
+    }
+    public void resetTouch(){
+        extensionMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        intakeTimer.reset();
+        while (extensionTouch.getState() && intakeTimer.milliseconds() < 1500) {
+            extensionMotor.setPower(-1);
+        }
+        intakeTimer.reset();
+        while (intakeTimer.milliseconds() < 150) {
+            claw.wristUp();
+        }
+        extensionMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        pivotMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeTimer.reset();
+        while (pivotTouch.getState() && intakeTimer.milliseconds() < 2000){
+            moveExtensionMotor(70, 0.5);
+            pivotMotor.setPower(-0.7);
+        }
+        extensionMotor.setPower(0);
+        pivotMotor.setPower(0);
+        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pivotMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        initRunPivotMotor(motorPower);
+        initRunExtMotor(motorPower);
     }
 }
 

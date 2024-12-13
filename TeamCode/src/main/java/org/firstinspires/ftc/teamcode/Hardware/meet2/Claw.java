@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Claw {
     HardwareMap hwMap = null;
@@ -19,6 +20,8 @@ public class Claw {
     public static final double WRIST_DELIVER = 0.8;
     public static final double SPECIMEN_DELIVER_SERVO = 0.23;
     public static final double SPECIMEN_READY_SERVO = 0.93;
+
+    public ElapsedTime clawTimer;
 
     public void init(HardwareMap hwMap) {
         this.hwMap = hwMap;

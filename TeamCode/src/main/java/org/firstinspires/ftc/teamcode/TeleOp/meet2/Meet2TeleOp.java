@@ -29,10 +29,6 @@ public class Meet2TeleOp extends LinearOpMode {
     private FiniteState finiteState = FiniteState.IDLE;
     ElapsedTime loopTimer;
     ElapsedTime waitingTimer;
-    ElapsedTime intakeTimer;
-    ElapsedTime clawTimer;
-    //telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-
 
     /**
      * This initializes the drive motors as well as the Follower and motion Vectors.
@@ -50,25 +46,32 @@ public class Meet2TeleOp extends LinearOpMode {
 
         loopTimer = new ElapsedTime();
         waitingTimer = new ElapsedTime();
-        intakeTimer = new ElapsedTime();
-        clawTimer = new ElapsedTime();
+        arm.intakeTimer = new ElapsedTime();
+        claw.clawTimer = new ElapsedTime();
 
         telemetry.addData("Robot State", "Initialized");
 
         claw.wristUp();
         claw.clawClose();
         arm.initRunExtMotor(arm.motorPower);
+        arm.initRunPivotMotor(arm.motorPower);
 
         telemetry.addData("Pivot Motor Position", arm.pivotMotor.getCurrentPosition());
         telemetry.addData("Extension Motor Position", arm.extensionMotor.getCurrentPosition());
-        telemetry.addData("Claw position",  "Offset = %.2f", claw.claw.getPosition());
-        telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1.getPosition());
-        telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2.getPosition());
+        telemetry.addData("Claw position",  claw.claw.getPosition());
+        telemetry.addData("Servo 1 position",   claw.servo1.getPosition());
+        telemetry.addData("Servo 2 position",   claw.servo2.getPosition());
+        telemetry.addData("Extension Touch", arm.extensionTouch.getState());
         telemetry.update();
 
         waitForStart();
 
         if (isStopRequested()) return;
+
+        while (arm.extensionTouch.getState() && arm.pivotTouch.getState()){
+            arm.resetTouch();
+            sleep(500);
+        }
 
         arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
 
@@ -129,12 +132,12 @@ public class Meet2TeleOp extends LinearOpMode {
                 if (DELIVERY_CHECK == 1) {
                     claw.clawOpen();
                     finiteState = FiniteState.DELIVERY_OPEN;
-                    clawTimer.reset();
+                    claw.clawTimer.reset();
                 } else if (DELIVERY_CHECK == 2) {
                     claw.wristDeliverSpecimen();
                     INTAKE_CHECK = 0;
                     finiteState = FiniteState.DELIVERY_SPECIMEN;
-                    clawTimer.reset();
+                    claw.clawTimer.reset();
                 }
             }
             if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
@@ -142,12 +145,12 @@ public class Meet2TeleOp extends LinearOpMode {
                     DELIVERY_CHECK = 1;
                     arm.movePivotMotor(arm.groundIntakePivot, arm.motorPower);
                     finiteState = FiniteState.INTAKE_GROUND_CLAW;
-                    intakeTimer.reset();
+                    arm.intakeTimer.reset();
                 } else if (INTAKE_CHECK == 2){
                     DELIVERY_CHECK = 2;
                     claw.clawClose();
                     finiteState = FiniteState.INTAKE_WALL_END;
-                    intakeTimer.reset();
+                    arm.intakeTimer.reset();
                 }
             }
 
@@ -155,7 +158,7 @@ public class Meet2TeleOp extends LinearOpMode {
                 claw.wristCenter();
                 claw.clawOpen();
                 finiteState = FiniteState.INTAKE_WALL_START;
-                intakeTimer.reset();
+                arm.intakeTimer.reset();
             }
 
             if (currentGamepad2.left_bumper && ! previousGamepad2.left_bumper) {
@@ -176,6 +179,11 @@ public class Meet2TeleOp extends LinearOpMode {
                 arm.moveExtensionJoystickIn(arm.incrementalJoystickExtension, arm.motorPower);
                 arm.movePivotJoystickDown(arm.incrementalJoystickPivot, arm.motorPower);
             }
+            if (currentGamepad2.back && !previousGamepad2.back){
+                arm.resetTouch();
+                sleep(500);
+                arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
+            }
 
             switch (finiteState) {
                 case INTAKE_GROUND_PIVOT:{
@@ -186,15 +194,15 @@ public class Meet2TeleOp extends LinearOpMode {
                     break;
                 }
                 case INTAKE_GROUND_CLAW:{
-                    if (intakeTimer.milliseconds() > 150){
+                    if (arm.intakeTimer.milliseconds() > 150){
                         claw.clawClose();
                         finiteState = FiniteState.INTAKE_GROUND_END;
-                        intakeTimer.reset();
+                        arm.intakeTimer.reset();
                     }
                     break;
                 }
                 case INTAKE_GROUND_END:{
-                    if (intakeTimer.milliseconds() > 100) {
+                    if (arm.intakeTimer.milliseconds() > 100) {
                         arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
                         arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
                         finiteState = FiniteState.IDLE;
@@ -202,14 +210,14 @@ public class Meet2TeleOp extends LinearOpMode {
                     break;
                 }
                 case INTAKE_WALL_START:{
-                    if (intakeTimer.milliseconds() > 100){
+                    if (arm.intakeTimer.milliseconds() > 100){
                         INTAKE_CHECK = 2;
                         finiteState = FiniteState.IDLE;
                     }
                     break;
                 }
                 case INTAKE_WALL_END:{
-                    if (intakeTimer.milliseconds() > 100){
+                    if (arm.intakeTimer.milliseconds() > 100){
                         claw.wristReadySpecimen();
                         arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
                         arm.moveExtensionMotor(arm.specimenDeliverExtension, arm.motorPower);
@@ -244,10 +252,10 @@ public class Meet2TeleOp extends LinearOpMode {
                     break;
                 }
                 case DELIVERY_OPEN:{
-                    if (clawTimer.milliseconds() > 100){
+                    if (claw.clawTimer.milliseconds() > 100){
                         claw.wristDown();
                         finiteState = FiniteState.EXTENSION_RESET_BUCKET;
-                        clawTimer.reset();
+                        claw.clawTimer.reset();
                     }
                     break;
                 }
@@ -258,15 +266,15 @@ public class Meet2TeleOp extends LinearOpMode {
                     break;
                 }
                 case DELIVERY_SPECIMEN:{
-                    if (clawTimer.milliseconds() > 400){
+                    if (claw.clawTimer.milliseconds() > 400){
                         claw.clawOpen();
                         finiteState = FiniteState.PIVOT_RESET_SPECIMEN;
-                        clawTimer.reset();
+                        claw.clawTimer.reset();
                     }
                     break;
                 }
                 case EXTENSION_RESET_BUCKET:{
-                    if (clawTimer.milliseconds() > 200) {
+                    if (claw.clawTimer.milliseconds() > 200) {
                         arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
                         finiteState = FiniteState.PIVOT_RESET_BUCKET;
                     }
@@ -280,7 +288,7 @@ public class Meet2TeleOp extends LinearOpMode {
                     break;
                 }
                 case PIVOT_RESET_SPECIMEN:{
-                    if (clawTimer.milliseconds() > 300){
+                    if (claw.clawTimer.milliseconds() > 300){
                         arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
                         finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
                     }
@@ -337,9 +345,9 @@ public class Meet2TeleOp extends LinearOpMode {
 
         telemetry.addData("Arm Motor Position", arm.pivotMotor.getCurrentPosition());
         telemetry.addData("Extension Motor Position", arm.extensionMotor.getCurrentPosition());
-        telemetry.addData("Claw position",  "Offset = %.2f", claw.claw.getPosition());
-        telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1.getPosition());
-        telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2.getPosition());
+        telemetry.addData("Claw position",   claw.claw.getPosition());
+        telemetry.addData("Servo 1 position",   claw.servo1.getPosition());
+        telemetry.addData("Servo 2 position",   claw.servo2.getPosition());
         telemetry.addData("Loop Timer", loopTimer.milliseconds());
         telemetry.update();
     }

@@ -29,5 +29,6 @@ public enum FiniteState{
     SAMPLE_PUSH,
     INTAKE_WALL_PRE_END,
     DECISION,
-    SAMPLE_PUSH_DONE
+    SAMPLE_PUSH_DONE,
+    END_AUTO
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -8,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Arm;
 
 @TeleOp(name="MotorTest", group="Test")
-//@Disabled
+@Disabled
 public class MotorTest extends LinearOpMode {
 Arm arm = new Arm();
     // Declare OpMode members.

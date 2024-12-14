@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Claw;
 
 @TeleOp(name="ClawTest", group="Test")
-//@Disabled
+@Disabled
 public class ClawTest extends LinearOpMode {
     Claw claw = new Claw();
     double SERVO_INCREMENT = 0.01;

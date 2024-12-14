@@ -24,7 +24,7 @@ public class Arm {
     public int velocity = 2000;
     public int motorPower = 1;
     public double extensionPower = 0.75;
-    public double incrementalJoystickExtension = 40;
+    public double incrementalJoystickExtension = 70;
     public double incrementalJoystickPivot = 7.1;
 
     HardwareMap hwMap = null;

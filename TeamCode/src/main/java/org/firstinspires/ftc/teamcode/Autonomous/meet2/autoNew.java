@@ -238,6 +238,7 @@ public class autoNew extends OpMode {
             case INTAKE_WALL_START:
                 follower.followPath(wallIntake, false);
                 wallIntake.setConstantHeadingInterpolation(0);
+                claw.wristCenter();
                 pathTimer.resetTimer();
                 finiteState = FiniteState.INTAKE_WALL_PRE_END;
                 break;

@@ -68,7 +68,7 @@ public class Meet2TeleOp extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        while (arm.extensionTouch.getState() && arm.pivotTouch.getState()){
+        while (arm.extensionTouch.getState() || arm.pivotTouch.getState()){
             arm.resetTouch();
             sleep(500);
         }

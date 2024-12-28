@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.Hardware.meet2;
 
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Arm {
     public int minimumPivot = 0;
@@ -12,9 +15,10 @@ public class Arm {
     public int maximumPivot = 2650;
     public int resetPivot = 2350;
     public int maximumPivotSpecimen = 3345;
-    public int groundIntakePivotReady = 485 ;
-    public int groundIntakePivot = 370;
-    public int wallIntakePivot = 740;
+    public int groundIntakePivotReady = 460 ;
+    public int groundIntakePivot = 345;
+    public int wallIntakePivot = 670;
+    public int groundIntakeEndPivot = 540;
     public int minimumExtension = 0;
     public int groundIntakeExtension = 250;
     public int maximumIntakeExtension = 1100;
@@ -23,14 +27,14 @@ public class Arm {
     public int incremental = 20;
     public int velocity = 2000;
     public int motorPower = 1;
-    public double extensionPower = 0.75;
     public double incrementalJoystickExtension = 40;
-    public double incrementalJoystickPivot = 7.1;
+    public double incrementalJoystickPivot = 7;
 
     HardwareMap hwMap = null;
 
     public DcMotorEx pivotMotor;
     public DcMotorEx extensionMotor;
+    public ColorRangeSensor specimenColorSensor;
 
     public ElapsedTime intakeTimer;
 
@@ -46,6 +50,7 @@ public class Arm {
         extensionMotor = hwMap.get(DcMotorEx.class, "extensionMotor");
         extensionTouch = hwMap.get(DigitalChannel.class, "extensionTouch");
         pivotTouch = hwMap.get(DigitalChannel.class, "pivotTouch");
+        specimenColorSensor = hwMap.get(ColorRangeSensor.class, "specimenColorSensor");
 
         pivotMotor.setDirection(DcMotorEx.Direction.FORWARD);
         extensionMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -132,7 +137,7 @@ public class Arm {
     public void movePivotJoystickUp(double incrementalJoystickPivot, int power){
         int currentPosition = pivotMotor.getCurrentPosition();
         double position = currentPosition + incrementalJoystickPivot;
-        if (position < 1500){
+        if (position < 570){
             pivotMotor.setTargetPosition((int) position);
             pivotMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             pivotMotor.setPower(power);
@@ -189,5 +194,6 @@ public class Arm {
         initRunPivotMotor(motorPower);
         initRunExtMotor(motorPower);
     }
+    public double getSpecimenColorSensor() { return specimenColorSensor.getDistance(DistanceUnit.MM); }
 }
 

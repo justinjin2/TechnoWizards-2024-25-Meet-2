@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Hardware.meet2;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -20,6 +21,9 @@ public class Claw {
     public static final double WRIST_DELIVER = 0.8;
     public static final double SPECIMEN_DELIVER_SERVO = 0.23;
     public static final double SPECIMEN_READY_SERVO = 0.93;
+    public static final double joystickIncrement = 0.001;
+    public static final double differentialMax = 0.31;
+    public static final double differentialMin = 0.15;
 
     public ElapsedTime clawTimer;
 
@@ -63,7 +67,7 @@ public class Claw {
         servo1.setPosition(MID_SERVO);
         servo2.setPosition(MID_SERVO);
     }
-    public void wristLeft(double incremental){
+    public void wristRight(double incremental){
         double position1 = servo1.getPosition();
         double position2 = servo2.getPosition();
         position1 += incremental;
@@ -71,13 +75,33 @@ public class Claw {
         servo1.setPosition(position1);
         servo2.setPosition(position2);
     }
-    public void wristRight(double incremental) {
+    public void wristLeft(double incremental) {
         double position1 = servo1.getPosition();
         double position2 = servo2.getPosition();
         position1 -= incremental;
         position2 += incremental;
         servo1.setPosition(position1);
         servo2.setPosition(position2);
+    }
+    public void wristRightJoystick(double wristIncremental) {
+        double currentPosition1 = servo1.getPosition();
+        double currentPosition2 = servo2.getPosition();
+        double position1 = currentPosition1 + wristIncremental;
+        double position2 = currentPosition2 - wristIncremental;
+        if (position1 <= differentialMax && position2 >= differentialMin) {
+            servo1.setPosition(position1);
+            servo2.setPosition(position2);
+        }
+    }
+    public void wristLeftJoystick(double wristIncremental) {
+        double currentPosition1 = servo1.getPosition();
+        double currentPosition2 = servo2.getPosition();
+        double position1 = currentPosition1 - wristIncremental;
+        double position2 = currentPosition2 + wristIncremental;
+        if (position1 >= differentialMin && position2 <= differentialMax) {
+            servo1.setPosition(position1);
+            servo2.setPosition(position2);
+        }
     }
     public void wristDeliver(){
         servo1.setPosition(WRIST_DELIVER);

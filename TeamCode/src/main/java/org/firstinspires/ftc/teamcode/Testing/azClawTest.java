@@ -101,7 +101,6 @@ public class azClawTest extends LinearOpMode {
         rightDIFOffset = MID_SERVO;
         leftDIFOffset = MID_SERVO;
         clawOffset = MID_SERVO;
-        axonTestOffset = MID_SERVO;
 
         // Wait for the game to start (driver presses START)
         waitForStart();

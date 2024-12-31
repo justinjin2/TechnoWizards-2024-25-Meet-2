@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-//@Disabled
+@Disabled
 @Autonomous (name = "pedro test", group = "test" )
 public class pedroTestingAz extends OpMode {
     private Follower follower;

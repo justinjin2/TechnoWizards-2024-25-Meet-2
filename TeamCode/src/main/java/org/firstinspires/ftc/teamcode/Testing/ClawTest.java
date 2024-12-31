@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Hardware.meet2.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Claw;
 
 @TeleOp(name="ClawTest", group="Test")
-//@Disabled
+@Disabled
 public class ClawTest extends LinearOpMode {
     Claw claw = new Claw();
     Arm arm = new Arm();

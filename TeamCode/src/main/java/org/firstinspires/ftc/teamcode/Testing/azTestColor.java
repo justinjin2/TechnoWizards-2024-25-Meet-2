@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "TestColor", group = "Sensor")
-//@Disabled
+@Disabled
 public class azTestColor extends LinearOpMode {
     DigitalChannel digitalColor;  // Digital channel Object
 

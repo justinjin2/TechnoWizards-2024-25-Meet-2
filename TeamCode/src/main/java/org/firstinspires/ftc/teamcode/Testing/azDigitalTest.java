@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Testing;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -22,7 +23,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "azDigitalTest", group = "Test")
-//@Disabled
+@Disabled
 public class azDigitalTest extends LinearOpMode {
     DigitalChannel extensionTouch = null;
     DigitalChannel pivotTouch = null;// Touch sensor Object

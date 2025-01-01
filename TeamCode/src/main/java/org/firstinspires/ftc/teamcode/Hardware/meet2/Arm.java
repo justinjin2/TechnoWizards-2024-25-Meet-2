@@ -17,7 +17,7 @@ public class Arm {
     public int maximumPivotSpecimen = 3345;
     public int groundIntakePivotReady = 460 ;
     public int groundIntakePivot = 345;
-    public int wallIntakePivot = 670;
+    public int wallIntakePivot = 690;
     public int groundIntakeEndPivot = 540;
     public int minimumExtension = 0;
     public int groundIntakeExtension = 250;

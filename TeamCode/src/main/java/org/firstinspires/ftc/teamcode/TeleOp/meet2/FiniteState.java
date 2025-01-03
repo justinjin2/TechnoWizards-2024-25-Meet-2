@@ -30,5 +30,7 @@ public enum FiniteState{
     INTAKE_WALL_PRE_END,
     DECISION,
     SAMPLE_PUSH_DONE,
-    END_AUTO
+    END_AUTO,
+    INTAKE_GROUND_START,
+    AUTO_INTAKE_GROUND_END
 }

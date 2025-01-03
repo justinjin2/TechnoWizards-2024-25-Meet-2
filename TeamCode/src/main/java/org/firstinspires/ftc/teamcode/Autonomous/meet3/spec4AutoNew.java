@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Testing;
+package org.firstinspires.ftc.teamcode.Autonomous.meet3;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -18,14 +18,14 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
-@Disabled
-@Autonomous(name = "5AutoTest", group = "test" )
-public class autoTest5Spec extends OpMode {
+//@Disabled
+@Autonomous(name = "4AutoNew", group = "test" )
+public class spec4AutoNew extends OpMode {
     private Follower follower;
     Arm arm = new Arm();
     Claw claw = new Claw();
     private int clawServoTime = 160;
-    private Timer pathTimer, opModeTimer;
+    private Timer pathTimer, opModeTimer, loopTimer;
 
     ElapsedTime waitingTimer;
 
@@ -63,7 +63,7 @@ public class autoTest5Spec extends OpMode {
     private Pose endPushPose3 =new Pose(116,pushPickup3ReadyPose.getY(), Math.toRadians(0));
     private Pose pickup3ControlPose = new Pose(112,112, Math.toRadians(0));
 
-    private Pose parkPose = new Pose (130, 134, Math.toRadians(0));
+    private Pose parkPose = new Pose (126, 118, Math.toRadians(0));
 
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
@@ -119,6 +119,9 @@ public class autoTest5Spec extends OpMode {
     }
 
     public void autonomousPathUpdate() {
+
+        loopTimer.resetTimer();
+
         switch  (finiteState) {
             /*********************
              * clip the preload sample
@@ -129,8 +132,8 @@ public class autoTest5Spec extends OpMode {
              * robot run to score position
              */
             case SCORE_PRELOAD: //First Scored Path
-                telemetry.addData("run to", "preload score Pose");
-                telemetry.update();
+//                telemetry.addData("run to", "preload score Pose");
+//                telemetry.update();
                 follower.followPath(scorePreload, false);
                 scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
                 finiteState = FiniteState.PIVOT_READY;
@@ -153,6 +156,7 @@ public class autoTest5Spec extends OpMode {
                 if (!follower.isBusy() && (arm.pivotMotor.getCurrentPosition() + 15) > arm.maximumPivot) {
                     claw.wristDeliverSpecimen();
                     arm.movePivotMotor(arm.maximumPivot-20, arm.motorPower);
+
                     finiteState = FiniteState.DELIVERY_SPECIMEN;
                     clawTimer.reset();
                 }
@@ -177,24 +181,18 @@ public class autoTest5Spec extends OpMode {
 
             case PIVOT_RESET_SPECIMEN:
                 if (clawTimer.milliseconds() > clawServoTime) {
-                    arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
                     claw.wristCenter();
                     clawTimer.reset();
-                    finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
+                    finiteState = FiniteState.DECISION;
                 }
                 break;
             /********
              * Adjust the extension arm for the string while the pivot arm is moving down
              * but not to the wall intake position
              */
-            case EXTENSION_RESET_SPECIMEN:
-                if (arm.pivotMotor.getCurrentPosition() <= arm.resetPivot) {
-                    arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
-                    finiteState = FiniteState.DECISION;
-                }
-                break;
 
-            /************
+
+            /********`****
              * Decide if the robot needs to push samples or go to wall intake
              */
             case DECISION:
@@ -207,44 +205,39 @@ public class autoTest5Spec extends OpMode {
             case SAMPLE_PUSH:
                 follower.followPath(pushPickup3, false);
                 pathTimer.resetTimer();
-                finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                finiteState = FiniteState.EXTENSION_RESET_SPECIMEN; //INTAKE_WALL_PRE_END;
                 break;
 
-            /*case SAMPLE_PUSH_DONE:
-                if (!follower.isBusy()) {
-                    follower.followPath(endPickToWallPath, false);
-                    endPickToWallPath.setConstantHeadingInterpolation(0);
-                    pathTimer.resetTimer();
+            case EXTENSION_RESET_SPECIMEN:
+                if (pathTimer.getElapsedTime()>0.2) {
+                    arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
+                    arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
+                    claw.wristCenter();
                     finiteState = FiniteState.INTAKE_WALL_PRE_END;
                 }
-                break;*/
+                break;
 
             case INTAKE_WALL_START:
                 if (numberOfDelivery == 1) {
-
                     follower.followPath(wallIntake, false);
                     wallIntake.setConstantHeadingInterpolation(0);
-                    claw.wristCenter();
                     pathTimer.resetTimer();
-                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                    finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
                     break;
                 }
-                if (numberOfDelivery == 2) {
-
-                    follower.followPath(wallIntake1, false);
-                    wallIntake1.setConstantHeadingInterpolation(0);
-                    claw.wristCenter();
-                    pathTimer.resetTimer();
-                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
-                    break;
-                }
+//                if (numberOfDelivery == 2) {
+//                    follower.followPath(wallIntake1, false);
+//                    wallIntake1.setConstantHeadingInterpolation(0);
+//                    pathTimer.resetTimer();
+//                    finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
+//                    break;
+//                }
                 if (numberOfDelivery == 3) {
 
                     follower.followPath(wallIntake2, false);
                     wallIntake2.setConstantHeadingInterpolation(0);
-                    claw.wristCenter();
                     pathTimer.resetTimer();
-                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                    finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
                     break;
                 }
 
@@ -252,29 +245,7 @@ public class autoTest5Spec extends OpMode {
                  Ends with 4 clip
                  */
 
-                /*if (numberOfDelivery == 4) {
-
-                    follower.followPath(wallIntake3, false);
-                    wallIntake3.setConstantHeadingInterpolation(0);
-                    arm.resetTouch();
-                    finiteState=FiniteState.IDLE;
-                    break;
-                }*/
-
-                /*
-                Ends with 5 clips
-                */
-
                 if (numberOfDelivery == 4) {
-
-                    follower.followPath(wallIntake3, false);
-                    wallIntake3.setConstantHeadingInterpolation(0);
-                    claw.wristCenter();
-                    pathTimer.resetTimer();
-                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
-                    break;
-                }
-                if (numberOfDelivery == 5) {
 
                     follower.followPath(wallIntake4, false);
                     wallIntake4.setConstantHeadingInterpolation(0);
@@ -283,9 +254,8 @@ public class autoTest5Spec extends OpMode {
                     break;
                 }
 
-
             case INTAKE_WALL_PRE_END:
-                if((arm.getSpecimenColorSensor() <= 80) || (!follower.isBusy()) && (arm.pivotMotor.getCurrentPosition() + 50) > arm.wallIntakePivot) {
+                if((arm.getSpecimenColorSensor() <= 30) || (!follower.isBusy()) && (arm.pivotMotor.getCurrentPosition() + 50) > arm.wallIntakePivot) {
                     claw.clawClose();
                     clawTimer.reset();
                     finiteState = FiniteState.INTAKE_WALL_END;
@@ -321,17 +291,14 @@ public class autoTest5Spec extends OpMode {
                         follower.followPath(wallToScore4, false);
                         wallToScore4.setConstantHeadingInterpolation(0);
                         pathTimer.resetTimer();
-                        finiteState = FiniteState.PIVOT_READY;
-                    }
-
-                    if (numberOfDelivery == 5) {
-                        finiteState= FiniteState.END_AUTO;
+                        finiteState = FiniteState.END_AUTO;
                     }
                 }
                 break;
         }
-        telemetry.addData("finiteState", finiteState);
+//        telemetry.addData("finiteState", finiteState);
         telemetry.addData("Sensor Distance", arm.getSpecimenColorSensor());
+//        telemetry.addData("Loop Time", loopTimer.getElapsedTime());
         telemetry.update();
 
     }
@@ -347,18 +314,19 @@ public class autoTest5Spec extends OpMode {
                 finiteState=FiniteState.IDLE;
                 break;
         }
-        telemetry.addData("finite state", finiteState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("number of Delivery", numberOfDelivery);
-        telemetry.addData("percentage of complete path:", (follower.getCurrentTValue() * 100));
-        telemetry.update();
+//        telemetry.addData("finite state", finiteState);
+//        telemetry.addData("x", follower.getPose().getX());
+//        telemetry.addData("y", follower.getPose().getY());
+//        telemetry.addData("number of Delivery", numberOfDelivery);
+//        telemetry.addData("percentage of complete path:", (follower.getCurrentTValue() * 100));
+//        telemetry.update();
 
     }
 
     @Override
     public void init () {
 
+        loopTimer = new Timer();
 
         pathTimer = new Timer();
         opModeTimer = new Timer();

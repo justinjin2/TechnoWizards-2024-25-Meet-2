@@ -244,7 +244,7 @@ public class Meet2TeleOp extends LinearOpMode {
                     break;
                 }
                 case DELIVERY_OPEN: {
-                    if (claw.clawTimer.milliseconds() > 100) {
+                    if (claw.clawTimer.milliseconds() > 200) {
                         claw.wristDown();
                         finiteState = FiniteState.EXTENSION_RESET_BUCKET;
                         claw.clawTimer.reset();

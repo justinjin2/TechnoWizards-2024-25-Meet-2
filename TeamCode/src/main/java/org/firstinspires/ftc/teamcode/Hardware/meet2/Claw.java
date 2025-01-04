@@ -13,17 +13,17 @@ public class Claw {
     public ServoImplEx servo1 = null;
     public ServoImplEx servo2 = null;
     public ServoImplEx claw = null;
-    public static final double MID_SERVO = 0.58;
+    public static final double MID_SERVO = 0.60;
     public static final double CLOSE_SERVO = 0.28;
     public static final double OPEN_SERVO = 0.50;
     public static final double WRIST_UP = 0.97;
     public static final double WRIST_DOWN = 0.23;
     public static final double WRIST_DELIVER = 0.8;
     public static final double SPECIMEN_DELIVER_SERVO = 0.23;
-    public static final double SPECIMEN_READY_SERVO = 0.93;
+    public static final double SPECIMEN_READY_SERVO = 0.91;
     public static final double joystickIncrement = 0.001;
-    public static final double differentialMax = 0.32;
-    public static final double differentialMin = 0.14;
+    public static final double differentialMax = 0.33;
+    public static final double differentialMin = 0.13;
 
     public ElapsedTime clawTimer;
 

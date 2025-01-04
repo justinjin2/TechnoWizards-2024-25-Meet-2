@@ -40,10 +40,10 @@ public class spec4AutoNew extends OpMode {
      */
     private final Pose startPose = new Pose (133, 89, Math.toRadians(0));
     // private Point scoreControlPoint= new Point(120, 96);
-    private Pose scorePose = new Pose (110, 83, Math.toRadians(0));
+    private Pose scorePose = new Pose (111, 84, Math.toRadians(0));
     private Pose scorePose1 = new Pose (109.5, 80, Math.toRadians(0));
-    private Pose scorePose2 = new Pose (109.5, 78, Math.toRadians(0));
-    private Pose scorePose3 = new Pose (109.5, 82, Math.toRadians(0));
+    private Pose scorePose2 = new Pose (109, 76, Math.toRadians(0));
+    private Pose scorePose3 = new Pose (109, 80, Math.toRadians(0));
     private Pose scorePose4 = new Pose (109.5, 70, Math.toRadians(0));
 
     private Pose wallIntakePose = new Pose(126.8, 108, Math.toRadians(0));
@@ -156,7 +156,6 @@ public class spec4AutoNew extends OpMode {
                 if (!follower.isBusy() && (arm.pivotMotor.getCurrentPosition() + 15) > arm.maximumPivot) {
                     claw.wristDeliverSpecimen();
                     arm.movePivotMotor(arm.maximumPivot-20, arm.motorPower);
-
                     finiteState = FiniteState.DELIVERY_SPECIMEN;
                     clawTimer.reset();
                 }
@@ -255,7 +254,7 @@ public class spec4AutoNew extends OpMode {
                 }
 
             case INTAKE_WALL_PRE_END:
-                if((arm.getSpecimenColorSensor() <= 30) || (!follower.isBusy()) && (arm.pivotMotor.getCurrentPosition() + 50) > arm.wallIntakePivot) {
+                if((arm.getSpecimenColorSensor() <= 55) || (!follower.isBusy()) && (arm.pivotMotor.getCurrentPosition() + 50) > arm.wallIntakePivot) {
                     claw.clawClose();
                     clawTimer.reset();
                     finiteState = FiniteState.INTAKE_WALL_END;

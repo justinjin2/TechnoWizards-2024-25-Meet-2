@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.Autonomous.meet2;
+package org.firstinspires.ftc.teamcode.Autonomous.meet3;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,52 +16,59 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
+
 //@Disabled
-@Autonomous (name = "pedro auto 3spec", group = "test" )
-public class auto3spec extends OpMode {
+@Autonomous(name = "5Auto", group = "test" )
+public class autoM3 extends OpMode {
     private Follower follower;
     Arm arm = new Arm();
     Claw claw = new Claw();
-
+    private int clawServoTime=250;
     private Timer pathTimer, opModeTimer;
 
     ElapsedTime waitingTimer;
-    ElapsedTime intakeTimer;
+
     ElapsedTime clawTimer;
     private Pose currentPos;
     private FiniteState finiteState = FiniteState.SCORE_PRELOAD;
     private int numberOfDelivery=0;
 
+    // private final Pose startPose = new Pose (135, 89, Math.toRadians(0));
+    /*
+    270 heading with left rear corner close the the observation zone edge. One side paralle to the wall
+     */
     private final Pose startPose = new Pose (137, 102, Math.toRadians(270));
-   // private Point scoreControlPoint= new Point(120, 96);
-    private Pose scorePose = new Pose (113, 76, Math.toRadians(0));
-    private Pose scorePose1 = new Pose (113, 73, Math.toRadians(0));
-    private Pose scorePose2 = new Pose (113, 70, Math.toRadians(0));
-    private Pose scorePose3 = new Pose (113, 67, Math.toRadians(0));
+    // private Point scoreControlPoint= new Point(120, 96);
+    private Pose scorePose = new Pose (114.6, 77, Math.toRadians(0));
+    private Pose scorePose1 = new Pose (114.6, 75, Math.toRadians(0));
+    private Pose scorePose2 = new Pose (114.6, 73, Math.toRadians(0));
+    private Pose scorePose3 = new Pose (114.6, 71, Math.toRadians(0));
+    private Pose scorePose4 = new Pose (114.6, 70, Math.toRadians(0));
 
-    private Pose wallIntakePose = new Pose(130, 116, Math.toRadians(0));
+    private Pose wallIntakePose = new Pose(128.5, 115, Math.toRadians(0));
 
-    private Pose wallIntakeAdjustPose = new Pose(130.5, 116, Math.toRadians(0));
+//private Pose wallIntakeAdjustPose = new Pose(130.5, 116, Math.toRadians(0));
 
-    private Pose pushPickup1ReadyPose = new Pose(85,114, Math.toRadians(0));
+    private Pose pushPickup1ReadyPose = new Pose(86,114, Math.toRadians(0));
     private Pose pickup1ControlPose1 = new Pose (122, 107, Math.toRadians(0));
-    private Pose pickup1ControlPose2 = new Pose (100, 105, Math.toRadians(0));
-    private Pose endPushPose1 =new Pose(118,pushPickup1ReadyPose.getY(), Math.toRadians(0));
+    private Pose pickup1ControlPose2 = new Pose (100, 104, Math.toRadians(0));
+    private Pose endPushPose1 =new Pose(120,pushPickup1ReadyPose.getY(), Math.toRadians(0));
 
-    private Pose pushPickup2ReadyPose = new Pose(83,124, Math.toRadians(0));
-    private Pose endPushPose2 =new Pose(118,pushPickup2ReadyPose.getY(), Math.toRadians(0));
-    private Pose pickup2ControlPose = new Pose(112,102, Math.toRadians(0));
+    private Pose pushPickup2ReadyPose = new Pose(90,123, Math.toRadians(0));
+    private Pose endPushPose2 =new Pose(120,pushPickup2ReadyPose.getY(), Math.toRadians(0));
+    private Pose pickup2ControlPose = new Pose(105,100, Math.toRadians(0));
 
-    private Pose pushPickup3ReadyPose = new Pose(83,130, Math.toRadians(0));
-    private Pose endPushPose3 =new Pose(118,pushPickup3ReadyPose.getY(), Math.toRadians(0));
+    private Pose pushPickup3ReadyPose = new Pose(93,130, Math.toRadians(0));
+    private Pose endPushPose3 =new Pose(120,pushPickup3ReadyPose.getY(), Math.toRadians(0));
     private Pose pickup3ControlPose = new Pose(112,112, Math.toRadians(0));
 
-    private Pose parkPose = new Pose (123, 123, Math.toRadians(0));
-    private int parkStart=0;
+    private Pose parkPose = new Pose (126, 104, Math.toRadians(0));
+
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
-    private Path scorePreload, wallIntake, wallToScore, wallToScore1,wallToScore2,wallToScore3, wallIntakeAdjust, endPickToWallPath, parkPath;
-    private PathChain  pushPickup1, pushPickup2, pushPickup3;
+    private Path scorePreload, wallIntake, wallToScore1,wallToScore2,wallToScore3, wallToScore4;
+    private Path wallIntake1,wallIntake2, wallIntake3, wallIntake4, endPickToWallPath;
+    private PathChain pushPickup1, pushPickup2, pushPickup3, pushPickup4;
 
     /** Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
      * It is necessary to do this so that all the paths are built before the auto starts. **/
@@ -72,47 +78,26 @@ public class auto3spec extends OpMode {
         scorePreload = new Path(new BezierLine(new Point(startPose), new Point(scorePose)));
         wallIntake = new Path(new BezierLine(new Point(scorePose), new Point(wallIntakePose)));
 
-        wallIntakeAdjust = new Path(new BezierLine(new Point(wallIntakePose),new Point(wallIntakeAdjustPose)));
-
-        wallToScore = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose)));
         wallToScore1 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose1)));
-        wallToScore2 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose2)));
-        wallToScore3 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose3)));
+        wallIntake1= new Path(new BezierLine(new Point(scorePose1), new Point(wallIntakePose)));
 
+        wallToScore2 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose2)));
+        wallIntake2= new Path(new BezierLine(new Point(scorePose2), new Point(wallIntakePose.getX(),wallIntakePose.getY()-2)));
+
+        wallToScore3 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose3)));
+        wallIntake3= new Path(new BezierLine(new Point(scorePose3), new Point(wallIntakePose)));
+
+        wallToScore4 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose4)));
+        wallIntake4 = new Path(new BezierLine(new Point(scorePose4), new Point(parkPose)));
         /* Here is an example for Constant Interpolation
         scorePreload.setConstantInterpolation(startPose.getHeading()); */
 
         /* This is our pushPickup1 PathChain. We are using  a BezierCurve with 4 points, which is a curved line that is curved based off of the control point */
-        pushPickup1= follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1ControlPose1), new Point(pickup1ControlPose2), new Point(pushPickup1ReadyPose)))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(pushPickup1ReadyPose), new Point(endPushPose1)))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(endPushPose1), new Point(endPushPose1.getX()-5, endPushPose1.getY())))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(endPushPose1.getX()-5, endPushPose1.getY()), new Point(wallIntakePose)))
-                .setConstantHeadingInterpolation(0)
-                .build();
 
-        pushPickup2= follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1ControlPose1), new Point(pickup1ControlPose2), new Point(pushPickup1ReadyPose)))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(pushPickup1ReadyPose), new Point(endPushPose1)))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierCurve(new Point(endPushPose1), new Point(pickup2ControlPose), new Point(pushPickup2ReadyPose)))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(pushPickup2ReadyPose), new Point(endPushPose2)))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(endPushPose2), new Point(endPushPose2.getX()-5, endPushPose2.getY())))
-                .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(endPushPose2.getX()-5, endPushPose2.getY()), new Point(wallIntakePose)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        endPickToWallPath = new Path(new BezierLine(new Point(endPushPose2.getX()-5, endPushPose2.getY()),new Point(wallIntakePose)));
+        // endPickToWallPath = new Path(new BezierLine(new Point(endPushPose2.getX()-2, endPushPose2.getY()),new Point(wallIntakePose)));
 
         pushPickup3= follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1ControlPose1), new Point(pickup1ControlPose2), new Point(pushPickup1ReadyPose)))
+                .addPath(new BezierCurve(new Point(scorePose1), new Point(pickup1ControlPose1), new Point(pickup1ControlPose2), new Point(pushPickup1ReadyPose)))
                 .setConstantHeadingInterpolation(0)
                 .addPath(new BezierLine(new Point(pushPickup1ReadyPose), new Point(endPushPose1)))
                 .setConstantHeadingInterpolation(0)
@@ -124,14 +109,12 @@ public class auto3spec extends OpMode {
                 .setConstantHeadingInterpolation(0)
                 .addPath(new BezierLine(new Point(pushPickup3ReadyPose), new Point(endPushPose3)))
                 .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(endPushPose3), new Point(endPushPose3.getX()-5, endPushPose3.getY())))
+                .addPath(new BezierLine(new Point(endPushPose3), new Point(endPushPose3.getX()-2, endPushPose3.getY())))
                 .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(endPushPose3.getX()-5, endPushPose3.getY()), new Point(wallIntakePose)))
+                .addPath(new BezierLine(new Point(endPushPose3.getX()-2, endPushPose3.getY()), new Point(wallIntakePose)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
-         parkPath = new Path(new BezierLine(new Point(scorePose2), new Point(parkPose)));
-         parkPath.setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading());
     }
 
     public void autonomousPathUpdate() {
@@ -156,7 +139,7 @@ public class auto3spec extends OpMode {
              * Move the arm and extension,
              */
             case PIVOT_READY:
-                if (pathTimer.getElapsedTimeSeconds() > 0.3) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.2) {
                     arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
                     arm.moveExtensionMotor(arm.specimenDeliverExtension, arm.motorPower);
                     finiteState = FiniteState.CLIP_DELIVERY_READY;
@@ -168,6 +151,7 @@ public class auto3spec extends OpMode {
             case CLIP_DELIVERY_READY:
                 if (!follower.isBusy() && (arm.pivotMotor.getCurrentPosition() + 15) > arm.maximumPivot) {
                     claw.wristDeliverSpecimen();
+                    arm.movePivotMotor(arm.maximumPivot-20, arm.motorPower);
                     finiteState = FiniteState.DELIVERY_SPECIMEN;
                     clawTimer.reset();
                 }
@@ -177,12 +161,12 @@ public class auto3spec extends OpMode {
              * Wait for claw go down so the claw can open to release the specimen
              ******************/
             case DELIVERY_SPECIMEN:
-                if (clawTimer.milliseconds() > 400) {
+                if (clawTimer.milliseconds() > clawServoTime) {
                     claw.clawOpen();
                     clawTimer.reset();
                     finiteState = FiniteState.PIVOT_RESET_SPECIMEN;
                     numberOfDelivery = numberOfDelivery + 1;
-                    }
+                }
                 break;
 
             /************
@@ -191,7 +175,7 @@ public class auto3spec extends OpMode {
              */
 
             case PIVOT_RESET_SPECIMEN:
-                if (clawTimer.milliseconds() > 200) {
+                if (clawTimer.milliseconds() > clawServoTime) {
                     arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
                     claw.wristCenter();
                     clawTimer.reset();
@@ -235,11 +219,50 @@ public class auto3spec extends OpMode {
                 break;
 
             case INTAKE_WALL_START:
-                follower.followPath(wallIntake, false);
-                wallIntake.setConstantHeadingInterpolation(0);
-                pathTimer.resetTimer();
-                finiteState = FiniteState.INTAKE_WALL_PRE_END;
-                break;
+                if (numberOfDelivery == 1) {
+
+                    follower.followPath(wallIntake, false);
+                    wallIntake.setConstantHeadingInterpolation(0);
+                    claw.wristCenter();
+                    pathTimer.resetTimer();
+                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                    break;
+                }
+                if (numberOfDelivery == 2) {
+
+                    follower.followPath(wallIntake1, false);
+                    wallIntake1.setConstantHeadingInterpolation(0);
+                    claw.wristCenter();
+                    pathTimer.resetTimer();
+                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                    break;
+                }
+                if (numberOfDelivery == 3) {
+
+                    follower.followPath(wallIntake2, false);
+                    wallIntake2.setConstantHeadingInterpolation(0);
+                    claw.wristCenter();
+                    pathTimer.resetTimer();
+                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                    break;
+                }
+                if (numberOfDelivery == 4) {
+
+                    follower.followPath(wallIntake3, false);
+                    wallIntake3.setConstantHeadingInterpolation(0);
+                    claw.wristCenter();
+                    pathTimer.resetTimer();
+                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                    break;
+                }
+                if (numberOfDelivery == 5) {
+
+                    follower.followPath(wallIntake4, false);
+                    wallIntake4.setConstantHeadingInterpolation(0);
+                    arm.resetTouch();
+                    finiteState=FiniteState.IDLE;
+                    break;
+                }
 
             case INTAKE_WALL_PRE_END:
                 if (!follower.isBusy() && (arm.pivotMotor.getCurrentPosition() + 50) > arm.wallIntakePivot) {
@@ -250,25 +273,40 @@ public class auto3spec extends OpMode {
                 break;
 
             case INTAKE_WALL_END:
-                if (clawTimer.milliseconds() > 200) {
+                if (clawTimer.milliseconds() > clawServoTime) {
                     claw.wristReadySpecimen();
 
                     if (numberOfDelivery == 1) {
                         follower.followPath(wallToScore1, false);
                         wallToScore1.setConstantHeadingInterpolation(0);
+                        pathTimer.resetTimer();
+                        finiteState = FiniteState.PIVOT_READY;
                     }
 
                     if (numberOfDelivery == 2) {
                         follower.followPath(wallToScore2, false);
                         wallToScore2.setConstantHeadingInterpolation(0);
+                        pathTimer.resetTimer();
+                        finiteState = FiniteState.PIVOT_READY;
                     }
 
                     if (numberOfDelivery == 3) {
                         follower.followPath(wallToScore3, false);
                         wallToScore3.setConstantHeadingInterpolation(0);
+                        pathTimer.resetTimer();
+                        finiteState = FiniteState.PIVOT_READY;
                     }
-                    pathTimer.resetTimer();
-                    finiteState = FiniteState.PIVOT_READY;
+
+                    if (numberOfDelivery == 4) {
+                        follower.followPath(wallToScore4, false);
+                        wallToScore4.setConstantHeadingInterpolation(0);
+                        pathTimer.resetTimer();
+                        finiteState = FiniteState.PIVOT_READY;
+                    }
+
+                    if (numberOfDelivery == 5) {
+                        finiteState= FiniteState.END_AUTO;
+                    }
                 }
                 break;
         }
@@ -282,17 +320,19 @@ public class auto3spec extends OpMode {
     public void loop () {
         follower.update();
         autonomousPathUpdate();
-
+        switch(finiteState){
+            case END_AUTO:
+                arm.resetTouch();
+                finiteState=FiniteState.IDLE;
+                break;
+        }
         telemetry.addData("finite state", finiteState);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("number of Delivery", numberOfDelivery);
         telemetry.addData("percentage of complete path:", (follower.getCurrentTValue() * 100));
         telemetry.update();
-//        if (opModeTimer.getElapsedTime() > 28 && parkStart==0) {
-//            parkStart=1;
-//            parkPath= new Path(new BezierLine(new Point(follower.getClosestPose()), new Point(parkPose)));
-//            parkPath.setLinearHeadingInterpolation(follower.getClosestPose().getHeading(), parkPose.getHeading());
-//        }
+
     }
 
     @Override
@@ -301,15 +341,13 @@ public class auto3spec extends OpMode {
 
         pathTimer = new Timer();
         opModeTimer = new Timer();
-        waitingTimer = new ElapsedTime();
-        intakeTimer = new ElapsedTime();
+
         clawTimer = new ElapsedTime();
+        arm.intakeTimer = new ElapsedTime();
 
         opModeTimer.resetTimer();
         pathTimer.resetTimer();
-        intakeTimer.reset();
         clawTimer.reset();
-        waitingTimer.reset();
 
 
         follower = new Follower(hardwareMap);
@@ -335,3 +373,4 @@ public class auto3spec extends OpMode {
         opModeTimer.resetTimer();
     }
 }
+

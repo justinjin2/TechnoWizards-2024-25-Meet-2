@@ -29,7 +29,7 @@ public class sampleTest extends OpMode {
     private Follower follower;
     Arm arm = new Arm();
     Claw claw = new Claw();
-    private int clawServoTime = 180;
+    private int clawServoTime = 200;
     private Timer pathTimer, opModeTimer, loopTimer;
 
     ElapsedTime waitingTimer;
@@ -112,9 +112,9 @@ public class sampleTest extends OpMode {
             case CLIP_DELIVERY_READY:
                 if (!follower.isBusy() && (arm.pivotMotor.getCurrentPosition() + 15) > arm.maximumPivot) {
                     claw.wristDeliverSpecimen();
+                    clawTimer.reset();
                     arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
                     finiteState = DELIVERY_SPECIMEN;
-                    clawTimer.reset();
                 }
                 break;
             /***************************
@@ -164,13 +164,13 @@ public class sampleTest extends OpMode {
             case INTAKE_GROUND_CLAW:
                 if (clawTimer.milliseconds() > 150) {
                     claw.clawClose();
-                    finiteState = FiniteState.INTAKE_GROUND_END;
                     clawTimer.reset();
+                    finiteState = FiniteState.INTAKE_GROUND_END;
                 }
                 break;
 
             case INTAKE_GROUND_END:
-                if ((clawTimer.milliseconds() > clawServoTime) || (arm.getSpecimenColorSensor() <= 30)) {
+                if (clawTimer.milliseconds() > clawServoTime) /*|| (arm.getSpecimenColorSensor() <= 30)*/ {
                     if (numberOfDelivery == 1) {
                         follower.followPath(groundToScore1, false);
                         groundToScore1.setLinearHeadingInterpolation(groundIntakePose1.getHeading(), scoreBucketPose.getHeading());
@@ -185,6 +185,7 @@ public class sampleTest extends OpMode {
                     }
                     arm.movePivotMotor(arm.maximumPivotBucket, arm.motorPower);
                     claw.wristDeliver();
+                    clawTimer.reset();
                     finiteState = FiniteState.DELIVERY_HIGH_BUCKET_PIVOT; //_PIVOT;
                 }
                 break;

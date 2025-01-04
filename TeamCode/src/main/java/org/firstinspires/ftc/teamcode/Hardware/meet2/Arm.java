@@ -17,7 +17,7 @@ public class Arm {
     public int maximumPivotSpecimen = 3345;
     public int groundIntakePivotReady = 460 ;
     public int groundIntakePivot = 345;
-    public int wallIntakePivot = 670;
+    public int wallIntakePivot = 685;
     public int groundIntakeEndPivot = 540;
     public int minimumExtension = 0;
     public int groundIntakeExtension = 250;
@@ -106,13 +106,7 @@ public class Arm {
     public void moveIncrementExtensionMotor(int incremental, int power){
         int currentPosition = extensionMotor.getCurrentPosition();
         int position = currentPosition + incremental;
-        if (position < minimumExtension){
-            extensionMotor.setTargetPosition(minimumExtension);
-        } else if (position > 10000){
-            extensionMotor.setTargetPosition(maximumIntakeExtension);
-        } else {
-            extensionMotor.setTargetPosition(position);
-        }
+        extensionMotor.setTargetPosition(position);
         extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         extensionMotor.setPower(power);
     }

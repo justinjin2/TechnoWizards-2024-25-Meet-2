@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Arm;
 
 @TeleOp(name="MotorTest", group="Test")
-@Disabled
+//@Disabled
 public class MotorTest extends LinearOpMode {
 Arm arm = new Arm();
     // Declare OpMode members.
@@ -25,17 +25,17 @@ Arm arm = new Arm();
         arm.initRunExtMotor(arm.motorPower);
 //        arm.initRunPivotMotor(arm.motorPower);
         waitForStart();
-
+//
         arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             currentGamepad1.copy(gamepad1);
             if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up){
-                arm.moveIncrementPivotMotor(arm.incremental, arm.motorPower);
+                arm.moveIncrementPivotMotor(50, arm.motorPower);
             }
             if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down){
-                arm.moveIncrementPivotMotor(-arm.incremental, arm.motorPower);
+                arm.moveIncrementPivotMotor(-50, arm.motorPower);
             }
             if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right){
                 arm.moveIncrementExtensionMotor(arm.incremental, arm.motorPower);

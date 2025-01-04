@@ -200,7 +200,7 @@ public class Meet2TeleOp extends LinearOpMode {
                 }
                 case INTAKE_WALL_START: {
                     INTAKE_CHECK = 2;
-                    if (arm.getSpecimenColorSensor() <= 20) {
+                    if (arm.getSpecimenColorSensor() <= 30) {
                         DELIVERY_CHECK = 2;
                         claw.clawClose();
                         finiteState = FiniteState.INTAKE_WALL_END;
@@ -210,7 +210,7 @@ public class Meet2TeleOp extends LinearOpMode {
                 }
                 case INTAKE_WALL_END: {
                     if (arm.intakeTimer.milliseconds() > 100) {
-                        claw.wristReadySpecimen();
+                        claw.wristUp();
                         arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
                         arm.moveExtensionMotor(arm.specimenDeliverExtension, arm.motorPower);
                         finiteState = FiniteState.DELIVERY_SPECIMEN_START;

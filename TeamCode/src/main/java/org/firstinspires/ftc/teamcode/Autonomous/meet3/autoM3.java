@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.meet3;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
-//@Disabled
+@Disabled
 @Autonomous(name = "5Auto", group = "test" )
 public class autoM3 extends OpMode {
     private Follower follower;

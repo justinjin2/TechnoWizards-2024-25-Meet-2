@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -12,29 +13,33 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Arm {
     public int minimumPivot = 0;
     public int maximumPivotBucket = 2500;
-    public int maximumPivot = 2650;
+    public int maximumPivot = 2660;
     public int resetPivot = 2350;
     public int maximumPivotSpecimen = 3345;
-    public int groundIntakePivotReady = 460 ;
+    public int groundIntakePivotReady = 470 ;
     public int groundIntakePivot = 345;
-    public int wallIntakePivot = 685;
+    public int wallIntakePivot = 687+50;
     public int groundIntakeEndPivot = 540;
     public int minimumExtension = 0;
     public int groundIntakeExtension = 250;
     public int maximumIntakeExtension = 1100;
     public int maximumDeliveryExtension = 2170;
-    public int specimenDeliverExtension = -130;
+    public int specimenDeliverExtension = -150;
     public int incremental = 20;
     public int velocity = 2000;
     public int motorPower = 1;
     public double incrementalJoystickExtension = 40;
     public double incrementalJoystickPivot = 7.1;
+    public double parkServoDown = 0;
+    public double parkServoUp = 0.5;
+
 
     HardwareMap hwMap = null;
 
     public DcMotorEx pivotMotor;
     public DcMotorEx extensionMotor;
     public ColorRangeSensor specimenColorSensor;
+    public ServoImplEx parkServo;
 
     public ElapsedTime intakeTimer;
 
@@ -51,6 +56,7 @@ public class Arm {
         extensionTouch = hwMap.get(DigitalChannel.class, "extensionTouch");
         pivotTouch = hwMap.get(DigitalChannel.class, "pivotTouch");
         specimenColorSensor = hwMap.get(ColorRangeSensor.class, "specimenColorSensor");
+        parkServo = hwMap.get(ServoImplEx.class, "parkServo");
 
         pivotMotor.setDirection(DcMotorEx.Direction.FORWARD);
         extensionMotor.setDirection(DcMotorEx.Direction.FORWARD);

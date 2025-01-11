@@ -1,13 +1,9 @@
-package org.firstinspires.ftc.teamcode.Testing;
+package org.firstinspires.ftc.teamcode.Autonomous.meet3;
 
-import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.AUTO_INTAKE_END;;
-import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.CLIP_DELIVERY_READY;
-import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.DELIVERY_SPECIMEN;
-import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.PIVOT_READY;
+import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.AUTO_INTAKE_END;
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.SCORE_PRELOAD;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -19,14 +15,15 @@ import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
-@Disabled
-@Autonomous(name = "Auto0+4", group = "Auto" )
-public class sampleTest extends OpMode {
+
+
+//@Disabled
+@Autonomous(name = "leftAuto0+4", group = "Auto" )
+public class autoYellow0_4 extends OpMode {
     private Follower follower;
     Arm arm = new Arm();
     Claw claw = new Claw();
@@ -47,11 +44,11 @@ public class sampleTest extends OpMode {
     private final Pose startPose = new Pose(137, 30, Math.toRadians(90));
     //private Pose scorePreloadPose = new Pose(111, 62, Math.toRadians(0));
     private Pose scoreBucketPose = new Pose(127, 12.5, Math.toRadians(135));
-    private Pose scoreBucketPose2 = new Pose(126, 12.8, Math.toRadians(135));
-    private Pose scoreBucketPose3 = new Pose(126, 12, Math.toRadians(135));
+    private Pose scoreBucketPose2 = new Pose(126, 12.0, Math.toRadians(135));
+    private Pose scoreBucketPose3 = new Pose(126, 10.9, Math.toRadians(135));
 
     private Pose groundIntakePose1 = new Pose(108.5, 20, Math.toRadians(180));
-    private Pose groundIntakePose2 = new Pose(110, 11, Math.toRadians(180));
+    private Pose groundIntakePose2 = new Pose(110, 10.5, Math.toRadians(180));
     private Pose groundIntakePose3 = new Pose(106, 4, Math.toRadians(210));
 
 //private Pose wallIntakeAdjustPose = new Pose(130.5, 116, Math.toRadians(0));

@@ -55,7 +55,7 @@ public class Meet2TeleOp extends LinearOpMode {
         }
 
         arm.movePivotMotor(arm.groundIntakeEndPivot, arm.motorPower);
-
+        arm.parkServo.setPosition(arm.parkServoDown);
         while (opModeIsActive() && !isStopRequested()) {
 
             loopTimer.reset();
@@ -111,12 +111,13 @@ public class Meet2TeleOp extends LinearOpMode {
             }
             if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
                 if (DELIVERY_CHECK == 1) {
+                    INTAKE_CHECK = 0;
                     claw.clawOpen();
                     finiteState = FiniteState.DELIVERY_OPEN;
                     claw.clawTimer.reset();
                 } else if (DELIVERY_CHECK == 2) {
-                    claw.wristDeliverSpecimen();
                     INTAKE_CHECK = 0;
+                    claw.wristDeliverSpecimen();
                     finiteState = FiniteState.DELIVERY_SPECIMEN;
                     claw.clawTimer.reset();
                 }
@@ -143,11 +144,11 @@ public class Meet2TeleOp extends LinearOpMode {
                 finiteState = FiniteState.INTAKE_WALL_START;
             }
 
-            if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper) {
+            if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
                 arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
             }
 
-            if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
+            if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper) {
                 arm.movePivotMotor(arm.minimumPivot, arm.motorPower);
             }
 
@@ -310,7 +311,6 @@ public class Meet2TeleOp extends LinearOpMode {
                     break;
                 }
             }
-
             switch (finiteState) {
                 case HANG_READY: {
                     if (arm.pivotMotor.getCurrentPosition() + 30 >= arm.maximumPivot) {
@@ -335,7 +335,7 @@ public class Meet2TeleOp extends LinearOpMode {
             previousGamepad1.copy(currentGamepad1);
             previousGamepad2.copy(currentGamepad2);
 
-//            telemetry.addData("Arm Motor Position", arm.pivotMotor.getCurrentPosition());
+            telemetry.addData("Arm Motor Position", arm.pivotMotor.getCurrentPosition());
 //            telemetry.addData("Extension Motor Position", arm.extensionMotor.getCurrentPosition());
 //            telemetry.addData("Claw position", claw.claw.getPosition());
 //            telemetry.addData("Servo 1 position", claw.servo1.getPosition());

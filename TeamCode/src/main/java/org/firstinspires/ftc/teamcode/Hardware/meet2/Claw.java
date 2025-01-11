@@ -13,17 +13,18 @@ public class Claw {
     public ServoImplEx servo1 = null;
     public ServoImplEx servo2 = null;
     public ServoImplEx claw = null;
-    public static final double MID_SERVO = 0.60;
+    public static final double MID_SERVO = 0.605;
     public static final double CLOSE_SERVO = 0.28;
-    public static final double OPEN_SERVO = 0.50;
-    public static final double WRIST_UP = 0.97;
+    public static final double OPEN_SERVO = 0.55;
+    public static final double WRIST_UP = 0.98;
     public static final double WRIST_DOWN = 0.23;
-    public static final double WRIST_DELIVER = 0.8;
+    public static final double WRIST_DELIVER = 0.7;//0.7;
     public static final double SPECIMEN_DELIVER_SERVO = 0.23;
     public static final double SPECIMEN_READY_SERVO = 0.91;
     public static final double joystickIncrement = 0.001;
     public static final double differentialMax = 0.33;
     public static final double differentialMin = 0.13;
+    public static final double wristIncrementalAuto=0.001;
 
     public ElapsedTime clawTimer;
 
@@ -67,7 +68,7 @@ public class Claw {
         servo1.setPosition(MID_SERVO);
         servo2.setPosition(MID_SERVO);
     }
-    public void wristRight(double incremental){
+    public void wristIncrementRight(double incremental){
         double position1 = servo1.getPosition();
         double position2 = servo2.getPosition();
         position1 += incremental;
@@ -75,11 +76,21 @@ public class Claw {
         servo1.setPosition(position1);
         servo2.setPosition(position2);
     }
-    public void wristLeft(double incremental) {
+    public void wristIncrementLeft(double incremental) {
         double position1 = servo1.getPosition();
         double position2 = servo2.getPosition();
         position1 -= incremental;
         position2 += incremental;
+        servo1.setPosition(position1);
+        servo2.setPosition(position2);
+    }
+    public void wristAutoRight() {
+        servo2.setPosition(differentialMax-0.05);
+        servo1.setPosition(differentialMin+0.05);
+    }
+    public void wristAutoReset() {
+        double position1 = servo1.getPosition() - 0.1;
+        double position2 = servo2.getPosition() + 0.1;
         servo1.setPosition(position1);
         servo2.setPosition(position2);
     }
@@ -103,6 +114,7 @@ public class Claw {
             servo2.setPosition(position2);
         }
     }
+
     public void wristDeliver(){
         servo1.setPosition(WRIST_DELIVER);
         servo2.setPosition(WRIST_DELIVER);

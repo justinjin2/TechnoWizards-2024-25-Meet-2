@@ -54,11 +54,11 @@ public class ClawTest extends LinearOpMode {
             }
 
             if (currentGamepad1.x && !previousGamepad1.x) {
-                claw.wristLeft(SERVO_INCREMENT);
+                claw.wristIncrementLeft(SERVO_INCREMENT);
             }
 
             if (currentGamepad1.b && !previousGamepad1.b) {
-                claw.wristRight(SERVO_INCREMENT);
+                claw.wristIncrementRight(SERVO_INCREMENT);
             }
 
             if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {

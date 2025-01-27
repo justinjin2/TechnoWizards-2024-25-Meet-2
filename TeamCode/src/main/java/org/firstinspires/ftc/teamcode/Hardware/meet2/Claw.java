@@ -94,6 +94,18 @@ public class Claw {
         servo1.setPosition(position1);
         servo2.setPosition(position2);
     }
+    public void setWrist90(){
+        servo1.setPosition(0.09);
+        servo2.setPosition(0.37);
+    }
+    public void setWrist45Right(){
+        servo1.setPosition(0.18);
+        servo2.setPosition(0.27);
+    }
+    public void setWrist45Left(){
+        servo1.setPosition(0.29);
+        servo2.setPosition(0.16);
+    }
     public void wristRightJoystick(double wristIncremental) {
         double currentPosition1 = servo1.getPosition();
         double currentPosition2 = servo2.getPosition();

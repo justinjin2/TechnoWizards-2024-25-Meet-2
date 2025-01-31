@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.Autonomous.meet3;
+package org.firstinspires.ftc.teamcode.Autonomous.LeagueFinal;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.END_TIME_PATH;
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.IDLE;
-import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.INTAKE_WALL_END;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,13 +20,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
-@Disabled
-@Autonomous(name = "4Spec", group = "Auto" )
-public class spec4AutoNew extends OpMode {
+//@Disabled
+@Autonomous(name = "4SpecM4", group = "Auto" )
+public class spec4AutoM4 extends OpMode {
     private Follower follower;
     Arm arm = new Arm();
     Claw claw = new Claw();
-    private int clawServoTime = 180;
+    private int clawServoTime = 200; //from 180 to 200
     private Timer pathTimer, opModeTimer, loopTimer;
 
     ElapsedTime waitingTimer;
@@ -38,17 +36,18 @@ public class spec4AutoNew extends OpMode {
     private FiniteState finiteState = FiniteState.SCORE_PRELOAD;
     private int numberOfDelivery = 0;
     private int checkEndAutoPreWallEnd = 0;
+    private double distance = 0;
     // private final Pose startPose = new Pose (135, 89, Math.toRadians(0));
     /*
     270 heading with left rear corner close the the observation zone edge. One side paralle to the wall
      */
     private final Pose startPose = new Pose(133, 89, Math.toRadians(0));
     // private Point scoreControlPoint= new Point(120, 96);
-    private Pose scorePose = new Pose(111, 83, Math.toRadians(0));
+    private Pose scorePose = new Pose(112, 83, Math.toRadians(0));
     private Pose scorePose1 = new Pose(110.5, 79, Math.toRadians(0));
     private Pose scorePose2 = new Pose(111, 76, Math.toRadians(0));
     private Pose scorePose3 = new Pose(111.5, 78, Math.toRadians(0));
-    private Pose scorePose4 = new Pose(111, 70, Math.toRadians(0));
+    private Pose scorePose4 = new Pose(111.5, 70, Math.toRadians(0));
 
 //    private Pose scorePose1 = new Pose(109.5, 80, Math.toRadians(0));
 //    private Pose scorePose2 = new Pose(109, 76, Math.toRadians(0));
@@ -56,8 +55,8 @@ public class spec4AutoNew extends OpMode {
 //    private Pose scorePose4 = new Pose(109.5, 70, Math.toRadians(0));
 
     private Pose wallIntakePose = new Pose(126.5, 108, Math.toRadians(0));
-
-//private Pose wallIntakeAdjustPose = new Pose(130.5, 116, Math.toRadians(0));
+    private Pose wallIntakeCheckPose = new Pose(wallIntakePose.getX() - 5, wallIntakePose.getY(), Math.toRadians(0));
+    private Pose wallIntakeAdjustPose = new Pose(wallIntakePose.getX() + 0.5, wallIntakePose.getY(), Math.toRadians(0));
 
     private Pose pushPickup1ReadyPose = new Pose(84, 116, Math.toRadians(0));
     private Pose pickup1ControlPose1 = new Pose(122, 107, Math.toRadians(0));
@@ -77,8 +76,9 @@ public class spec4AutoNew extends OpMode {
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
     private Path scorePreload, wallIntake, wallToScore1, wallToScore2, wallToScore3, wallToScore4;
-    private Path wallIntake1, wallIntake2, wallIntake3, wallIntake4, endTimePath;
+    private Path wallIntake1, wallIntake2, wallIntake3, wallIntake4, endTimePath, parkPath;
     private PathChain pushPickup1, pushPickup2, pushPickup3, pushPickup4, wallIntakeCheckPath;
+    private PathChain wallIntakePathChain, wallIntake1PathChain, wallIntake2PathChain, decisionPath, decisionPathBack;
 
     /**
      * Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
@@ -89,23 +89,59 @@ public class spec4AutoNew extends OpMode {
         //scorePreload = new Path(new BezierCurve(new Point(startPose), scoreControlPoint, new Point(scorePose)));
         scorePreload = new Path(new BezierLine(new Point(startPose), new Point(scorePose)));
         wallIntake = new Path(new BezierLine(new Point(scorePose), new Point(wallIntakePose)));
+        wallIntakePathChain = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose), new Point(wallIntakeCheckPose)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(wallIntakeCheckPose), new Point(wallIntakePose)))
+                .setConstantHeadingInterpolation(0)
+                .build();
 
-        wallToScore1 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose1)));
+
+       // wallToScore1 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose1)));
+        wallToScore1 = new Path(new BezierLine(new Point(wallIntakeCheckPose), new Point(scorePose1)));
+
         wallIntake1 = new Path(new BezierLine(new Point(scorePose1), new Point(wallIntakePose)));
+        wallIntake1PathChain = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose1), new Point(wallIntakeCheckPose)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(wallIntakeCheckPose.getX(), wallIntakeCheckPose.getY()-3), new Point(wallIntakePose)))
+                .setConstantHeadingInterpolation(0)
+                .build();
 
-        wallToScore2 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose2)));
+       // wallToScore2 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose2)));
+        wallToScore2 = new Path(new BezierLine(new Point(wallIntakeCheckPose), new Point(scorePose2)));
         wallIntake2 = new Path(new BezierLine(new Point(scorePose2), new Point(wallIntakePose)));
 
-        wallToScore3 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose3)));
+        wallIntake2PathChain = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose2), new Point(wallIntakeCheckPose)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(wallIntakeCheckPose), new Point(wallIntakePose)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+
+        //wallToScore3 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose3)));
+        wallToScore3 = new Path(new BezierLine(new Point(wallIntakeCheckPose), new Point(scorePose3)));
         wallIntake3 = new Path(new BezierLine(new Point(scorePose3), new Point(wallIntakePose)));
 
-        wallToScore4 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose4)));
+        //wallToScore4 = new Path(new BezierLine(new Point(wallIntakePose), new Point(scorePose4)));
+        wallToScore4 = new Path(new BezierLine(new Point(wallIntakeCheckPose), new Point(scorePose4)));
         wallIntake4 = new Path(new BezierLine(new Point(scorePose4), new Point(parkPose)));
 
-        wallIntakeCheckPath = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(wallIntakePose), new Point(wallIntakePose.getX() - 5, wallIntakePose.getY())))
+        parkPath = new Path(new BezierLine(new Point(scorePose3), new Point(parkPose)));
+
+        decisionPath =  follower.pathBuilder()
+                .addPath(new BezierLine(new Point(wallIntakePose), new Point(wallIntakeCheckPose)))
                 .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(wallIntakePose.getX() - 5, wallIntakePose.getY()), new Point(wallIntakePose.getX() + 0.5, wallIntakePose.getY())))
+                .build();
+
+        decisionPathBack =  follower.pathBuilder()
+                .addPath(new BezierLine(new Point(wallIntakeCheckPose), new Point(wallIntakePose)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+        wallIntakeCheckPath = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(wallIntakePose), new Point(wallIntakeCheckPose)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(wallIntakeCheckPose), new Point(wallIntakeAdjustPose)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
@@ -115,6 +151,21 @@ public class spec4AutoNew extends OpMode {
         /* This is our pushPickup1 PathChain. We are using  a BezierCurve with 4 points, which is a curved line that is curved based off of the control point */
 
         // endPickToWallPath = new Path(new BezierLine(new Point(endPushPose2.getX()-2, endPushPose2.getY()),new Point(wallIntakePose)));
+
+        pushPickup2= follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePose), new Point(pickup1ControlPose1), new Point(pickup1ControlPose2), new Point(pushPickup1ReadyPose)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(pushPickup1ReadyPose), new Point(endPushPose1)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierCurve(new Point(endPushPose1), new Point(pickup2ControlPose), new Point(pushPickup2ReadyPose)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(pushPickup2ReadyPose), new Point(endPushPose2)))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(endPushPose2), new Point(endPushPose2.getX()-5, endPushPose2.getY())))
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(endPushPose2.getX()-5, endPushPose2.getY()), new Point(wallIntakePose.getX(), wallIntakePose.getY()-1)))
+                .setConstantHeadingInterpolation(0)
+                .build();
 
         pushPickup3 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePose1), new Point(pickup1ControlPose1), new Point(pickup1ControlPose2), new Point(pushPickup1ReadyPose)))
@@ -136,6 +187,8 @@ public class spec4AutoNew extends OpMode {
                 .build();
 
     }
+
+
 
     public void autonomousPathUpdate() {
 
@@ -201,7 +254,7 @@ public class spec4AutoNew extends OpMode {
                 if ((clawTimer.milliseconds() > clawServoTime)  && (checkEndAutoPreWallEnd != 1)){
                     claw.wristCenter();
                     clawTimer.reset();
-                    finiteState = FiniteState.DECISION;
+                    finiteState = FiniteState.INTAKE_WALL_START;
                 }
                 if ((clawTimer.milliseconds() > clawServoTime)  && (checkEndAutoPreWallEnd == 1)){
                     arm.resetTouch();
@@ -215,46 +268,45 @@ public class spec4AutoNew extends OpMode {
 
 
             /********`****
-             * Decide if the robot needs to push samples or go to wall intake
+             * This is the old DECISION Finite State to Decide if the robot needs to push samples or go to wall intake
+             * It was commented out in M3
              */
+            /*
             case DECISION:
                 if (numberOfDelivery == 2)
-                    finiteState = FiniteState.SAMPLE_PUSH;
+                    finiteState = FiniteState.INTAKE_WALL_START;
+                    // finiteState = FiniteState.SAMPLE_PUSH;
                 else
                     finiteState = FiniteState.INTAKE_WALL_START;
                 break;
+            */
 
             case SAMPLE_PUSH:
-                follower.followPath(pushPickup3, false);
+                follower.followPath(pushPickup2, false);
                 pathTimer.resetTimer();
                 finiteState = FiniteState.EXTENSION_RESET_SPECIMEN; //INTAKE_WALL_PRE_END;
                 break;
 
-            case EXTENSION_RESET_SPECIMEN:
-                if (pathTimer.getElapsedTime() > 0.2) {
-                    arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
-                    arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
-                    claw.wristCenter();
-                    clawTimer.reset();
-                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
-                }
-                break;
-
-            case INTAKE_WALL_START:
+            case INTAKE_WALL_START: {
                 if (numberOfDelivery == 1) {
-                    follower.followPath(wallIntake, false);
-                    wallIntake.setConstantHeadingInterpolation(0);
+                    /* The following 2 lines are for old wallIntakePath, NOT THE PATH CHAIN
+                    ** The PathChain will guarantee it will go to the wall straight
+                     */
+//                    follower.followPath(wallIntake, false);
+//                    wallIntake.setConstantHeadingInterpolation(0);
+                    follower.followPath(wallIntakePathChain);
                     pathTimer.resetTimer();
                     finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
                     break;
                 }
-//                if (numberOfDelivery == 2) {
+                if (numberOfDelivery == 2) {
 //                    follower.followPath(wallIntake1, false);
 //                    wallIntake1.setConstantHeadingInterpolation(0);
-//                    pathTimer.resetTimer();
-//                    finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
-//                    break;
-//                }
+                    follower.followPath(pushPickup2, false);
+                    pathTimer.resetTimer();
+                    finiteState = FiniteState.EXTENSION_RESET_SPECIMEN;
+                    break;
+                }
                 if (numberOfDelivery == 3) {
 
                     follower.followPath(wallIntake2, false);
@@ -270,16 +322,32 @@ public class spec4AutoNew extends OpMode {
 
                 if (numberOfDelivery == 4) {
 
-                    follower.followPath(wallIntake4, false);
-                    wallIntake4.setConstantHeadingInterpolation(0);
+                    follower.followPath(parkPath, false);
+                    parkPath.setConstantHeadingInterpolation(0);
                     arm.resetTouch();
                     finiteState = FiniteState.IDLE;
                     break;
                 }
+            }
+
+            case EXTENSION_RESET_SPECIMEN: {
+                arm.movePivotMotor(arm.wallIntakePivot + 10, arm.motorPower);
+                arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
+                //claw.wristCenter();
+                if (pathTimer.getElapsedTime() > 0.2 && numberOfDelivery != 2) {
+                    clawTimer.reset();
+                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                }
+                if (pathTimer.getElapsedTimeSeconds() > 6 && numberOfDelivery == 2) {
+                    clawTimer.reset();
+                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                }
+                break;
+            }
 
             case INTAKE_WALL_PRE_END: {
-                //if (((arm.getSpecimenColorSensor() <= 55) || (!follower.isBusy()) )//&& (arm.pivotMotor.getCurrentPosition() + 15) > arm.wallIntakePivot)
-                if  ((arm.getSpecimenColorSensor() <= 55) || (!follower.isBusy())) {
+                distance = arm.getSpecimenColorSensor();
+                if  ((distance <= 55) || (!follower.isBusy()) || clawTimer.milliseconds() > 800) {
                     claw.clawClose();
                     clawTimer.reset();
                     finiteState = FiniteState.INTAKE_WALL_CHECK;
@@ -288,17 +356,35 @@ public class spec4AutoNew extends OpMode {
                 break;
             }
 
-            case INTAKE_WALL_CHECK:
+            case INTAKE_WALL_CHECK: {
+                //distance = arm.getSpecimenColorSensor();
                 if ((clawTimer.milliseconds() > 250) && (arm.getSpecimenColorSensor() <= 55)) {
-                    finiteState = FiniteState.INTAKE_WALL_END;
+                    follower.followPath(decisionPath, false);
+                    pathTimer.resetTimer();
+                    finiteState = FiniteState.DECISION;//INTAKE_WALL_END;
                 }
-                if ((clawTimer.milliseconds() > 251) && (arm.getSpecimenColorSensor() > 55)) {
+                if ((clawTimer.milliseconds() > 251) && (distance > 55)) {
                     claw.clawOpen();
                     clawTimer.reset();
                     follower.followPath(wallIntakeCheckPath, false);
                     finiteState = FiniteState.INTAKE_WALL_PRE_END;
                 }
                 break;
+            }
+
+            case DECISION:{
+                distance = arm.getSpecimenColorSensor();
+                if((!follower.isBusy()) && (distance <= 55))
+                    finiteState = FiniteState.INTAKE_WALL_END;
+                if((!follower.isBusy()) && (distance > 55)) {
+                    follower.followPath(decisionPathBack,false);
+                    pathTimer.resetTimer();
+                    claw.clawOpen();
+                    clawTimer.reset();
+                    finiteState = FiniteState.INTAKE_WALL_PRE_END;
+                }
+                break;
+            }
 
             case INTAKE_WALL_END:
                 if (clawTimer.milliseconds() > clawServoTime) {
@@ -324,13 +410,15 @@ public class spec4AutoNew extends OpMode {
                         pathTimer.resetTimer();
                         finiteState = FiniteState.PIVOT_READY;
                     }
-
+/**
                     if (numberOfDelivery == 4) {
                         follower.followPath(wallToScore4, false);
                         wallToScore4.setConstantHeadingInterpolation(0);
                         pathTimer.resetTimer();
                         finiteState = FiniteState.END_AUTO;
                     }
+
+ */
                 }
                 break;
 
@@ -351,7 +439,7 @@ public class spec4AutoNew extends OpMode {
 //        if((opModeTimer.getElapsedTimeSeconds()>=27.5) && (finiteState == INTAKE_WALL_END)){
 //            checkEndAutoPreWallEnd=1;
 //        }
-        if ((opModeTimer.getElapsedTimeSeconds() >= 28.5) && (finiteState != END_TIME_PATH) && (finiteState != IDLE) && (checkEndAutoPreWallEnd !=1) ){
+        if ((opModeTimer.getElapsedTimeSeconds() >= 27.5) && (finiteState != END_TIME_PATH) && (finiteState != IDLE) && (checkEndAutoPreWallEnd !=1) ){
             follower.breakFollowing();
             currentPose = follower.getPose();
             endTimePath = new Path(new BezierLine(new Point(currentPose), new Point(parkPose)));
@@ -362,52 +450,53 @@ public class spec4AutoNew extends OpMode {
                 arm.resetTouch();
                 finiteState = FiniteState.END_TIME_PATH;
                 break;
-//        telemetry.addData("finite state", finiteState);
+
 //        telemetry.addData("x", follower.getPose().getX());
 //        telemetry.addData("y", follower.getPose().getY());
 //        telemetry.addData("number of Delivery", numberOfDelivery);
 //        telemetry.addData("percentage of complete path:", (follower.getCurrentTValue() * 100));
-//        telemetry.update();
+     // telemetry.update();
         }
+        telemetry.addData("finite state", finiteState);
+        telemetry.update();
     }
-        @Override
-        public void init () {
+    @Override
+    public void init () {
 
-            loopTimer = new Timer();
+        loopTimer = new Timer();
 
-            pathTimer = new Timer();
-            opModeTimer = new Timer();
+        pathTimer = new Timer();
+        opModeTimer = new Timer();
 
-            clawTimer = new ElapsedTime();
-            arm.intakeTimer = new ElapsedTime();
+        clawTimer = new ElapsedTime();
+        arm.intakeTimer = new ElapsedTime();
 
-            opModeTimer.resetTimer();
-            pathTimer.resetTimer();
-            clawTimer.reset();
+        opModeTimer.resetTimer();
+        pathTimer.resetTimer();
+        clawTimer.reset();
 
 
-            follower = new Follower(hardwareMap);
-            follower.setStartingPose(startPose);
+        follower = new Follower(hardwareMap);
+        follower.setStartingPose(startPose);
 
-            arm.init(hardwareMap);
-            claw.init(hardwareMap);
+        arm.init(hardwareMap);
+        claw.init(hardwareMap);
 
-            claw.wristUp();
-            claw.clawClose();
-            arm.initRunExtMotor(arm.motorPower);
-            finiteState = FiniteState.SCORE_PRELOAD;
-        }
+        claw.wristUp();
+        claw.clawClose();
+        arm.initRunExtMotor(arm.motorPower);
+        finiteState = FiniteState.SCORE_PRELOAD;
+    }
 
-        @Override
-        public void init_loop () {
+    @Override
+    public void init_loop () {
 // Camera code
-        }
-
-        @Override
-        public void start () {
-            buildPaths();
-            opModeTimer.resetTimer();
-        }
     }
 
+    @Override
+    public void start () {
+        buildPaths();
+        opModeTimer.resetTimer();
+    }
+}
 

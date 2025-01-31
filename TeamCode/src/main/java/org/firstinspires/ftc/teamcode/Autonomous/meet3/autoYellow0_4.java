@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.AUTO_INTAK
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.SCORE_PRELOAD;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
 
-//@Disabled
+@Disabled
 @Autonomous(name = "leftAuto0+4", group = "Auto" )
 public class autoYellow0_4 extends OpMode {
     private Follower follower;

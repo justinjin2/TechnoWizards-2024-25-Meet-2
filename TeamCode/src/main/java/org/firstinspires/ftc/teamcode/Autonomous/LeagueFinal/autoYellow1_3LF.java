@@ -1,14 +1,12 @@
-package org.firstinspires.ftc.teamcode.Autonomous.meet3;
+package org.firstinspires.ftc.teamcode.Autonomous.LeagueFinal;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.AUTO_INTAKE_END;
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.CLIP_DELIVERY_READY;
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.DELIVERY_SPECIMEN;
-import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.INTAKE_GROUND_CLAW;
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.PIVOT_READY;
 import static org.firstinspires.ftc.teamcode.TeleOp.meet2.FiniteState.SCORE_PRELOAD;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -26,9 +24,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 ;
 
 
-@Disabled
-@Autonomous(name = "leftAuto1+3", group = "Auto" )
-public class autoYellow1_3 extends OpMode {
+//@Disabled
+@Autonomous(name = "leftAuto1+3LF", group = "Auto" )
+public class autoYellow1_3LF extends OpMode {
     private Follower follower;
     Arm arm = new Arm();
     Claw claw = new Claw();

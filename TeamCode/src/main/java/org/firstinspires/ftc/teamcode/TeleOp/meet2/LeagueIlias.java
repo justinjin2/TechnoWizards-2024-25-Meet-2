@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Hardware.meet2.Arm;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.Claw;
 import org.firstinspires.ftc.teamcode.Hardware.meet2.DriveTrain;
 
-@TeleOp(name = "League for Ilias", group = "Test")
+@TeleOp(name = "League for Ilias")
 public class LeagueIlias extends LinearOpMode {
     Arm arm = new Arm();
     Claw claw = new Claw();
@@ -76,10 +76,10 @@ public class LeagueIlias extends LinearOpMode {
             driveTrain.Strafe = gamepad1.left_stick_x;
             driveTrain.Turn = -gamepad1.right_stick_x * 0.5;  // Turning speed cut by 50%
 
-            driveTrain.leftFrontPower = Range.clip(driveTrain.Speed + driveTrain.Strafe + driveTrain.Turn, -1, 1);
-            driveTrain.rightFrontPower = Range.clip(driveTrain.Speed - driveTrain.Strafe - driveTrain.Turn, -1, 1);
-            driveTrain.leftRearPower = Range.clip(driveTrain.Speed - driveTrain.Strafe + driveTrain.Turn, -1, 1);
-            driveTrain.rightRearPower = Range.clip(driveTrain.Speed + driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.leftFrontPower = Range.clip(driveTrain.Speed - driveTrain.Strafe + driveTrain.Turn, -1, 1);
+            driveTrain.rightFrontPower = Range.clip(driveTrain.Speed + driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.leftRearPower = Range.clip(driveTrain.Speed + driveTrain.Strafe + driveTrain.Turn, -1, 1);
+            driveTrain.rightRearPower = Range.clip(driveTrain.Speed - driveTrain.Strafe - driveTrain.Turn, -1, 1);
 
 
             driveTrain.leftFront.setPower(driveTrain.leftFrontPower * driveTrain.rightSpeedAdjust * driveTrain.leftSpeedAdjust);

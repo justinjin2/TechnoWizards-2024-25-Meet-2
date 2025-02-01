@@ -37,6 +37,7 @@ public class spec4AutoM4 extends OpMode {
     private int numberOfDelivery = 0;
     private int checkEndAutoPreWallEnd = 0;
     private double distance = 0;
+    private int coLorSensorThresh = 50;
     // private final Pose startPose = new Pose (135, 89, Math.toRadians(0));
     /*
     270 heading with left rear corner close the the observation zone edge. One side paralle to the wall
@@ -331,7 +332,7 @@ public class spec4AutoM4 extends OpMode {
             }
 
             case EXTENSION_RESET_SPECIMEN: {
-                arm.movePivotMotor(arm.wallIntakePivot + 10, arm.motorPower);
+                arm.movePivotMotor(arm.wallIntakePivotAuto + 10, arm.motorPower);
                 arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
                 //claw.wristCenter();
                 if (pathTimer.getElapsedTime() > 0.2 && numberOfDelivery != 2) {
@@ -347,7 +348,7 @@ public class spec4AutoM4 extends OpMode {
 
             case INTAKE_WALL_PRE_END: {
                 distance = arm.getSpecimenColorSensor();
-                if  ((distance <= 55) || (!follower.isBusy()) || clawTimer.milliseconds() > 800) {
+                if  ((distance <= coLorSensorThresh) || (!follower.isBusy()) || clawTimer.milliseconds() > 200) {
                     claw.clawClose();
                     clawTimer.reset();
                     finiteState = FiniteState.INTAKE_WALL_CHECK;
@@ -357,13 +358,13 @@ public class spec4AutoM4 extends OpMode {
             }
 
             case INTAKE_WALL_CHECK: {
-                //distance = arm.getSpecimenColorSensor();
-                if ((clawTimer.milliseconds() > 250) && (arm.getSpecimenColorSensor() <= 55)) {
+                distance = arm.getSpecimenColorSensor();
+                if ((clawTimer.milliseconds() > 250) && (distance <= coLorSensorThresh)) {
                     follower.followPath(decisionPath, false);
                     pathTimer.resetTimer();
                     finiteState = FiniteState.DECISION;//INTAKE_WALL_END;
                 }
-                if ((clawTimer.milliseconds() > 251) && (distance > 55)) {
+                if ((clawTimer.milliseconds() > 251) && (distance > coLorSensorThresh)) {
                     claw.clawOpen();
                     clawTimer.reset();
                     follower.followPath(wallIntakeCheckPath, false);
@@ -374,9 +375,9 @@ public class spec4AutoM4 extends OpMode {
 
             case DECISION:{
                 distance = arm.getSpecimenColorSensor();
-                if((!follower.isBusy()) && (distance <= 55))
+                if((!follower.isBusy()) && (distance <= coLorSensorThresh - 20))
                     finiteState = FiniteState.INTAKE_WALL_END;
-                if((!follower.isBusy()) && (distance > 55)) {
+                if((!follower.isBusy()) && (distance > coLorSensorThresh -20 )) {
                     follower.followPath(decisionPathBack,false);
                     pathTimer.resetTimer();
                     claw.clawOpen();
@@ -457,8 +458,8 @@ public class spec4AutoM4 extends OpMode {
 //        telemetry.addData("percentage of complete path:", (follower.getCurrentTValue() * 100));
      // telemetry.update();
         }
-        telemetry.addData("finite state", finiteState);
-        telemetry.update();
+//        telemetry.addData("finite state", finiteState);
+//        telemetry.update();
     }
     @Override
     public void init () {

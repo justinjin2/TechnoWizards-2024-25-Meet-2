@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
-//@Disabled
+@Disabled
 @Autonomous(name = "4SpecLF", group = "Auto" )
 public class autoTeamColor extends OpMode {
     private Follower follower;

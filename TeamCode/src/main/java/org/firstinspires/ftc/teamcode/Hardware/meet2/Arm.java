@@ -19,7 +19,7 @@ public class Arm {
     public int groundIntakePivotReady = 470 ;
     public int groundIntakePivot = 345;
     public int wallIntakePivot = 730;
-    public int wallIntakePivotAuto = 687;
+    public int wallIntakePivotAuto = 687 + 20;
     public int groundIntakeEndPivot = 540;
     public int minimumExtension = 0;
     public int groundIntakeExtension = 250;
@@ -177,7 +177,7 @@ public class Arm {
         driveAligner();
         extensionMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeTimer.reset();
-        while (extensionTouch.getState() && intakeTimer.milliseconds() < 1500) {
+        while (extensionTouch.getState() || intakeTimer.milliseconds() > 1500) {
             extensionMotor.setPower(-1);
         }
         intakeTimer.reset();
@@ -187,7 +187,7 @@ public class Arm {
         extensionMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         pivotMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeTimer.reset();
-        while (pivotTouch.getState() && intakeTimer.milliseconds() < 2000){
+        while (pivotTouch.getState() || intakeTimer.milliseconds() > 2000){
             moveExtensionMotor(70, 0.5);
             pivotMotor.setPower(-0.7);
         }

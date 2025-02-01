@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
 //@Disabled
-@Autonomous(name = "4SpecM4", group = "Auto" )
-public class spec4AutoM4 extends OpMode {
+@Autonomous(name = "4SpecM4NG", group = "Auto" )
+public class spec4AutoM4NoGuide extends OpMode {
     private Follower follower;
     Arm arm = new Arm();
     Claw claw = new Claw();
@@ -37,7 +37,7 @@ public class spec4AutoM4 extends OpMode {
     private int numberOfDelivery = 0;
     private int checkEndAutoPreWallEnd = 0;
     private double distance = 0;
-    private int coLorSensorThresh = 50;
+    private int coLorSensorThresh = 45;
     // private final Pose startPose = new Pose (135, 89, Math.toRadians(0));
     /*
     270 heading with left rear corner close the the observation zone edge. One side paralle to the wall
@@ -45,9 +45,9 @@ public class spec4AutoM4 extends OpMode {
     private final Pose startPose = new Pose(133, 89, Math.toRadians(0));
     // private Point scoreControlPoint= new Point(120, 96);
     private Pose scorePose = new Pose(112, 83, Math.toRadians(0));
-    private Pose scorePose1 = new Pose(110.5, 79, Math.toRadians(0));
-    private Pose scorePose2 = new Pose(111, 76, Math.toRadians(0));
-    private Pose scorePose3 = new Pose(111.5, 78, Math.toRadians(0));
+    private Pose scorePose1 = new Pose(110.25, 80, Math.toRadians(0));
+    private Pose scorePose2 = new Pose(110.75, 72, Math.toRadians(0));
+    private Pose scorePose3 = new Pose(110.25, 72, Math.toRadians(0));
     private Pose scorePose4 = new Pose(111.5, 70, Math.toRadians(0));
 
 //    private Pose scorePose1 = new Pose(109.5, 80, Math.toRadians(0));
@@ -164,7 +164,7 @@ public class spec4AutoM4 extends OpMode {
                 .setConstantHeadingInterpolation(0)
                 .addPath(new BezierLine(new Point(endPushPose2), new Point(endPushPose2.getX()-5, endPushPose2.getY())))
                 .setConstantHeadingInterpolation(0)
-                .addPath(new BezierLine(new Point(endPushPose2.getX()-5, endPushPose2.getY()), new Point(wallIntakePose.getX(), wallIntakePose.getY()-1)))
+                .addPath(new BezierLine(new Point(endPushPose2.getX()-5, endPushPose2.getY()), new Point(wallIntakePose.getX()+3, wallIntakePose.getY()-1)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
@@ -207,6 +207,7 @@ public class spec4AutoM4 extends OpMode {
             case SCORE_PRELOAD: //First Scored Path
 //                telemetry.addData("run to", "preload score Pose");
 //                telemetry.update();
+                arm.driveAligner();
                 follower.followPath(scorePreload, false);
                 scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
                 finiteState = FiniteState.PIVOT_READY;
@@ -282,11 +283,11 @@ public class spec4AutoM4 extends OpMode {
                 break;
             */
 
-            case SAMPLE_PUSH:
-                follower.followPath(pushPickup2, false);
-                pathTimer.resetTimer();
-                finiteState = FiniteState.EXTENSION_RESET_SPECIMEN; //INTAKE_WALL_PRE_END;
-                break;
+//            case SAMPLE_PUSH:
+//                follower.followPath(pushPickup2, false);
+//                pathTimer.resetTimer();
+//                finiteState = FiniteState.EXTENSION_RESET_SPECIMEN; //INTAKE_WALL_PRE_END;
+//                break;
 
             case INTAKE_WALL_START: {
                 if (numberOfDelivery == 1) {
@@ -348,7 +349,7 @@ public class spec4AutoM4 extends OpMode {
 
             case INTAKE_WALL_PRE_END: {
                 distance = arm.getSpecimenColorSensor();
-                if  ((distance <= coLorSensorThresh) || (!follower.isBusy()) || clawTimer.milliseconds() > 200) {
+                if  ((distance <= coLorSensorThresh) || (!follower.isBusy()) || clawTimer.milliseconds() > 1500) {
                     claw.clawClose();
                     clawTimer.reset();
                     finiteState = FiniteState.INTAKE_WALL_CHECK;
@@ -360,6 +361,8 @@ public class spec4AutoM4 extends OpMode {
             case INTAKE_WALL_CHECK: {
                 distance = arm.getSpecimenColorSensor();
                 if ((clawTimer.milliseconds() > 250) && (distance <= coLorSensorThresh)) {
+                    claw.wristReadySpecimen();
+                    clawTimer.reset();
                     follower.followPath(decisionPath, false);
                     pathTimer.resetTimer();
                     finiteState = FiniteState.DECISION;//INTAKE_WALL_END;
@@ -375,11 +378,13 @@ public class spec4AutoM4 extends OpMode {
 
             case DECISION:{
                 distance = arm.getSpecimenColorSensor();
-                if((!follower.isBusy()) && (distance <= coLorSensorThresh - 20))
+                if(/*(!follower.isBusy()) &&*/ (distance <= coLorSensorThresh - 10)) {
                     finiteState = FiniteState.INTAKE_WALL_END;
-                if((!follower.isBusy()) && (distance > coLorSensorThresh -20 )) {
+                }
+                if(/*(!follower.isBusy()) &&*/ (distance > coLorSensorThresh -10 )) {
                     follower.followPath(decisionPathBack,false);
                     pathTimer.resetTimer();
+                    claw.wristCenter();
                     claw.clawOpen();
                     clawTimer.reset();
                     finiteState = FiniteState.INTAKE_WALL_PRE_END;
@@ -389,8 +394,8 @@ public class spec4AutoM4 extends OpMode {
 
             case INTAKE_WALL_END:
                 if (clawTimer.milliseconds() > clawServoTime) {
-                    claw.wristReadySpecimen();
-
+//                    claw.wristReadySpecimen();
+//                    clawTimer.reset();
                     if (numberOfDelivery == 1) {
                         follower.followPath(wallToScore1, false);
                         wallToScore1.setConstantHeadingInterpolation(0);
@@ -411,15 +416,7 @@ public class spec4AutoM4 extends OpMode {
                         pathTimer.resetTimer();
                         finiteState = FiniteState.PIVOT_READY;
                     }
-/**
-                    if (numberOfDelivery == 4) {
-                        follower.followPath(wallToScore4, false);
-                        wallToScore4.setConstantHeadingInterpolation(0);
-                        pathTimer.resetTimer();
-                        finiteState = FiniteState.END_AUTO;
-                    }
 
- */
                 }
                 break;
 
@@ -449,17 +446,11 @@ public class spec4AutoM4 extends OpMode {
         switch (finiteState) {
             case END_AUTO:
                 arm.resetTouch();
+                arm.initAligner();
                 finiteState = FiniteState.END_TIME_PATH;
                 break;
-
-//        telemetry.addData("x", follower.getPose().getX());
-//        telemetry.addData("y", follower.getPose().getY());
-//        telemetry.addData("number of Delivery", numberOfDelivery);
-//        telemetry.addData("percentage of complete path:", (follower.getCurrentTValue() * 100));
-     // telemetry.update();
         }
-//        telemetry.addData("finite state", finiteState);
-//        telemetry.update();
+
     }
     @Override
     public void init () {
@@ -485,6 +476,7 @@ public class spec4AutoM4 extends OpMode {
 
         claw.wristUp();
         claw.clawClose();
+        arm.initAligner();
         arm.initRunExtMotor(arm.motorPower);
         finiteState = FiniteState.SCORE_PRELOAD;
     }

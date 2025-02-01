@@ -42,18 +42,24 @@ public class LeagueIlias extends LinearOpMode {
 
         claw.wristUp();
         claw.clawClose();
-        arm.initAligner();
         arm.initRunExtMotor(arm.motorPower);
         arm.initRunPivotMotor(arm.motorPower);
-
-        waitForStart();
-
-        if (isStopRequested()) return;
 
         while (arm.extensionTouch.getState() && arm.pivotTouch.getState()){
             arm.resetTouch();
             sleep(500);
         }
+
+        arm.initAligner();
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+//        while (arm.extensionTouch.getState() && arm.pivotTouch.getState()){
+//            arm.resetTouch();
+//            sleep(500);
+//        }
 
         arm.movePivotMotor(arm.groundIntakeEndPivot, arm.motorPower);
         arm.parkServo.setPosition(arm.parkServoDown);

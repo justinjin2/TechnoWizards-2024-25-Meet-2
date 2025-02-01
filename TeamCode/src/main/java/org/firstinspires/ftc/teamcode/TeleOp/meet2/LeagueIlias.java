@@ -264,7 +264,7 @@ public class LeagueIlias extends LinearOpMode {
                     break;
                 }
                 case DELIVERY_OPEN: {
-                    if (claw.clawTimer.milliseconds() > 200) {
+                    if (claw.clawTimer.milliseconds() > 250) {
                         claw.wristDown();
                         finiteState = FiniteState.EXTENSION_RESET_BUCKET;
                         claw.clawTimer.reset();

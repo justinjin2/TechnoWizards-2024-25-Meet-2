@@ -56,6 +56,7 @@ public class Meet2TeleOp extends LinearOpMode {
 
         arm.movePivotMotor(arm.groundIntakeEndPivot, arm.motorPower);
         arm.parkServo.setPosition(arm.parkServoDown);
+
         while (opModeIsActive() && !isStopRequested()) {
 
             loopTimer.reset();

@@ -42,6 +42,7 @@ public class LeagueIlias extends LinearOpMode {
 
         claw.wristUp();
         claw.clawClose();
+        arm.initAligner();
         arm.initRunExtMotor(arm.motorPower);
         arm.initRunPivotMotor(arm.motorPower);
 
@@ -56,6 +57,8 @@ public class LeagueIlias extends LinearOpMode {
 
         arm.movePivotMotor(arm.groundIntakeEndPivot, arm.motorPower);
         arm.parkServo.setPosition(arm.parkServoDown);
+        arm.driveAligner();
+
         while (opModeIsActive() && !isStopRequested()) {
 
             loopTimer.reset();
@@ -91,6 +94,7 @@ public class LeagueIlias extends LinearOpMode {
             currentGamepad2.copy(gamepad2);
 
             if (currentGamepad1.a && !previousGamepad1.a) { //Ground Intake
+                arm.driveAligner();
                 arm.movePivotMotor(arm.groundIntakePivotReady, arm.motorPower);
                 arm.moveExtensionMotor(arm.groundIntakeExtension, arm.motorPower);
                 claw.clawOpen();
@@ -138,6 +142,7 @@ public class LeagueIlias extends LinearOpMode {
             }
 
             if (currentGamepad1.x && !previousGamepad1.x) {
+                arm.driveAligner();
                 claw.wristCenter();
                 claw.clawOpen();
                 arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
@@ -196,7 +201,7 @@ public class LeagueIlias extends LinearOpMode {
                     break;
                 }
                 case INTAKE_GROUND_CLAW: {
-                    if (arm.intakeTimer.milliseconds() > 150) {
+                    if (arm.intakeTimer.milliseconds() > 250) {
                         claw.clawClose();
                         finiteState = FiniteState.INTAKE_GROUND_END;
                         arm.intakeTimer.reset();
@@ -214,7 +219,7 @@ public class LeagueIlias extends LinearOpMode {
                 }
                 case INTAKE_WALL_START: {
                     INTAKE_CHECK = 2;
-                    if (arm.getSpecimenColorSensor() <= 30) {
+                    if (arm.getSpecimenColorSensor() <= 25) {
                         DELIVERY_CHECK = 2;
                         claw.clawClose();
                         finiteState = FiniteState.INTAKE_WALL_END;
@@ -227,6 +232,7 @@ public class LeagueIlias extends LinearOpMode {
                         claw.wristUp();
                         arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
                         arm.moveExtensionMotor(arm.specimenDeliverExtension, arm.motorPower);
+                        arm.specimenAligner();
                         finiteState = FiniteState.DELIVERY_SPECIMEN_START;
                     }
                     break;
@@ -272,7 +278,7 @@ public class LeagueIlias extends LinearOpMode {
                     break;
                 }
                 case DELIVERY_SPECIMEN: {
-                    if (claw.clawTimer.milliseconds() > 350) {
+                    if (claw.clawTimer.milliseconds() > 250) {
                         claw.clawOpen();
                         finiteState = FiniteState.PIVOT_RESET_SPECIMEN;
                         claw.clawTimer.reset();
@@ -310,6 +316,14 @@ public class LeagueIlias extends LinearOpMode {
                     if (arm.extensionMotor.getCurrentPosition() + 50 >= arm.minimumExtension) {
                         claw.wristUp();
                         claw.clawClose();
+                        finiteState = FiniteState.RESET_ALIGNER_SPECIMEN;
+                        claw.clawTimer.reset();
+                    }
+                    break;
+                }
+                case RESET_ALIGNER_SPECIMEN: {
+                    if (claw.clawTimer.milliseconds() > 1000) {
+                        arm.driveAligner();
                         finiteState = FiniteState.IDLE;
                     }
                     break;

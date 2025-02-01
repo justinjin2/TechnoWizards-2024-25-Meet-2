@@ -18,7 +18,8 @@ public class Arm {
     public int maximumPivotSpecimen = 3345;
     public int groundIntakePivotReady = 470 ;
     public int groundIntakePivot = 345;
-    public int wallIntakePivot = 687+50;
+    public int wallIntakePivot = 730;
+    public int wallIntakePivotAuto = 687;
     public int groundIntakeEndPivot = 540;
     public int minimumExtension = 0;
     public int groundIntakeExtension = 250;
@@ -29,7 +30,7 @@ public class Arm {
     public int velocity = 2000;
     public int motorPower = 1;
     public double incrementalJoystickExtension = 100;
-    public double incrementalJoystickPivot = 18;
+    public double incrementalJoystickPivot = 19;
     public double parkServoDown = 0;
     public double parkServoUp = 0.5;
 
@@ -40,6 +41,7 @@ public class Arm {
     public DcMotorEx extensionMotor;
     public ColorRangeSensor specimenColorSensor;
     public ServoImplEx parkServo;
+    public ServoImplEx leftAligner;
 
     public ElapsedTime intakeTimer;
 
@@ -57,6 +59,7 @@ public class Arm {
         pivotTouch = hwMap.get(DigitalChannel.class, "pivotTouch");
         specimenColorSensor = hwMap.get(ColorRangeSensor.class, "specimenColorSensor");
         parkServo = hwMap.get(ServoImplEx.class, "parkServo");
+        leftAligner = hwMap.get(ServoImplEx.class, "alignleft");
 
         pivotMotor.setDirection(DcMotorEx.Direction.FORWARD);
         extensionMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -171,6 +174,7 @@ public class Arm {
         extensionMotor.setPower(velocity);
     }
     public void resetTouch(){
+        driveAligner();
         extensionMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeTimer.reset();
         while (extensionTouch.getState() && intakeTimer.milliseconds() < 1500) {
@@ -193,6 +197,18 @@ public class Arm {
         pivotMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         initRunPivotMotor(motorPower);
         initRunExtMotor(motorPower);
+    }
+    public void initAligner(){
+        parkServo.setPosition(0);
+        leftAligner.setPosition(1);
+    }
+    public void driveAligner(){
+        parkServo.setPosition(1);
+        leftAligner.setPosition(0);
+    }
+    public void specimenAligner(){
+        parkServo.setPosition(0.7);
+        leftAligner.setPosition(0.27);
     }
     public double getSpecimenColorSensor() { return specimenColorSensor.getDistance(DistanceUnit.MM); }
 }

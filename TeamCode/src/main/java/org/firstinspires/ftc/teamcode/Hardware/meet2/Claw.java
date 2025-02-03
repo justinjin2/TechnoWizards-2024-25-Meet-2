@@ -14,8 +14,8 @@ public class Claw {
     public ServoImplEx servo2 = null;
     public ServoImplEx claw = null;
     public static final double MID_SERVO = 0.605;
-    public static final double CLOSE_SERVO = 0.28;
-    public static final double OPEN_SERVO = 0.53;
+    public static final double CLOSE_SERVO = 0.20;
+    public static final double OPEN_SERVO = 0.52;
     public static final double WRIST_UP = 0.98;
     public static final double WRIST_DOWN = 0.23;
     public static final double WRIST_DELIVER = 0.7;//0.7;

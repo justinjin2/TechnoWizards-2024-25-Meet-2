@@ -32,7 +32,7 @@ public class Arm {
     public double incrementalJoystickExtension = 100;
     public double incrementalJoystickPivot = 19;
     public double parkServoDown = 0;
-    public double parkServoUp = 0.5;
+    public double parkServoUp = 0.42;
 
 
     HardwareMap hwMap = null;

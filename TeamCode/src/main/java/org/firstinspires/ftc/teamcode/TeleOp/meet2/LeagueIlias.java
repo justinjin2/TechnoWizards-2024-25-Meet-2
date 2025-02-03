@@ -99,6 +99,12 @@ public class LeagueIlias extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
+            if (currentGamepad1.dpad_left && !previousGamepad1.dpad_left) { //Ground Intake
+                INTAKE_CHECK = 0;
+                arm.movePivotMotor(1800, arm.motorPower);
+                claw.wristDeliver();
+                finiteState = FiniteState.DELIVERY_HIGH_BUCKET_PIVOT_BACKUP;
+            }
             if (currentGamepad1.a && !previousGamepad1.a) { //Ground Intake
                 arm.driveAligner();
                 arm.movePivotMotor(arm.groundIntakePivotReady, arm.motorPower);
@@ -254,6 +260,13 @@ public class LeagueIlias extends LinearOpMode {
                     }
                     break;
                 }
+                case DELIVERY_HIGH_BUCKET_PIVOT_BACKUP: {
+                    if (arm.pivotMotor.getCurrentPosition() + 200 >= 1800) {
+                        arm.moveExtensionMotor(800, arm.motorPower);
+                        finiteState = FiniteState.DELIVERY_HIGH_BUCKET;
+                    }
+                    break;
+                }
                 case DELIVERY_HIGH_BUCKET: {
                     if (arm.extensionMotor.getCurrentPosition() + 15 >= arm.maximumDeliveryExtension) {
                         DELIVERY_CHECK = 1;
@@ -270,7 +283,7 @@ public class LeagueIlias extends LinearOpMode {
                     break;
                 }
                 case DELIVERY_OPEN: {
-                    if (claw.clawTimer.milliseconds() > 250) {
+                    if (claw.clawTimer.milliseconds() > 300) {
                         claw.wristDown();
                         finiteState = FiniteState.EXTENSION_RESET_BUCKET;
                         claw.clawTimer.reset();

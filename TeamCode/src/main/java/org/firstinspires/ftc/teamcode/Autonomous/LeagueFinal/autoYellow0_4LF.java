@@ -41,8 +41,8 @@ public class autoYellow0_4LF extends OpMode {
      */
     private final Pose startPose = new Pose(137, 30, Math.toRadians(90));
     //private Pose scorePreloadPose = new Pose(111, 62, Math.toRadians(0));
-    private Pose scoreBucketPose = new Pose(127, 12.5, Math.toRadians(135));
-    private Pose scoreBucketPose2 = new Pose(126, 12.0, Math.toRadians(135));
+    private Pose scoreBucketPose = new Pose(127.5, 12, Math.toRadians(135));
+    private Pose scoreBucketPose2 = new Pose(126, 11.5, Math.toRadians(135));
     private Pose scoreBucketPose3 = new Pose(126, 10.9, Math.toRadians(135));
 
     private Pose groundIntakePose1 = new Pose(108.5, 20, Math.toRadians(180));
@@ -91,6 +91,7 @@ public class autoYellow0_4LF extends OpMode {
             case SCORE_PRELOAD: //First Scored Path
                 follower.followPath(scorePreload, false);
                 scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scoreBucketPose.getHeading());
+                arm.driveAligner();
                 finiteState = FiniteState.PIVOT_READY;
                 pathTimer.resetTimer();
                 break;
@@ -275,6 +276,7 @@ public class autoYellow0_4LF extends OpMode {
         switch (finiteState) {
             case END_AUTO:
                 arm.resetTouch();
+                arm.initAligner();
                 finiteState = FiniteState.PARK_SERVO;
                 break;
 //          telemetry.addData("path state", pathState);
@@ -306,8 +308,8 @@ public class autoYellow0_4LF extends OpMode {
 
         claw.wristUp();
         claw.clawClose();
+        arm.initAligner();
         arm.initRunExtMotor(arm.motorPower);
-        arm.parkServo.setPosition(arm.parkServoDown);
         finiteState = FiniteState.SCORE_PRELOAD;
     }
 

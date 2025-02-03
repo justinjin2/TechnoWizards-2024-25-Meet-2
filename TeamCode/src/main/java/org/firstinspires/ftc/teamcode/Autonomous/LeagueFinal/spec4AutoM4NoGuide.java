@@ -360,14 +360,14 @@ public class spec4AutoM4NoGuide extends OpMode {
 
             case INTAKE_WALL_CHECK: {
                 distance = arm.getSpecimenColorSensor();
-                if ((clawTimer.milliseconds() > 250) && (distance <= coLorSensorThresh)) {
+                if ((clawTimer.milliseconds() > 350) && (distance <= coLorSensorThresh)) {
                     claw.wristReadySpecimen();
                     clawTimer.reset();
                     follower.followPath(decisionPath, false);
                     pathTimer.resetTimer();
                     finiteState = FiniteState.DECISION;//INTAKE_WALL_END;
                 }
-                if ((clawTimer.milliseconds() > 251) && (distance > coLorSensorThresh)) {
+                if ((clawTimer.milliseconds() > 350) && (distance > coLorSensorThresh)) {
                     claw.clawOpen();
                     clawTimer.reset();
                     follower.followPath(wallIntakeCheckPath, false);

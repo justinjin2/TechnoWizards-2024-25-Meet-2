@@ -17,13 +17,13 @@ public class Claw {
     public static final double CLOSE_SERVO = 0.20;
     public static final double OPEN_SERVO = 0.52;
     public static final double WRIST_UP = 0.98;
-    public static final double WRIST_DOWN = 0.23;
+    public static final double WRIST_DOWN = 0.26 ;
     public static final double WRIST_DELIVER = 0.7;//0.7;
     public static final double SPECIMEN_DELIVER_SERVO = 0.23;
     public static final double SPECIMEN_READY_SERVO = 0.91;
     public static final double joystickIncrement = 0.001;
-    public static final double differentialMax = 0.33;
-    public static final double differentialMin = 0.13;
+    public static final double differentialMax = 0.35;
+    public static final double differentialMin = 0.10;
     public static final double wristIncrementalAuto=0.001;
 
     public ElapsedTime clawTimer;
@@ -33,7 +33,7 @@ public class Claw {
 
         servo1 = hwMap.get(ServoImplEx.class, "servo1");
         servo2 = hwMap.get(ServoImplEx.class, "servo2");
-        claw = hwMap.get(ServoImplEx.class, "claw");
+         claw = hwMap.get(ServoImplEx.class, "claw");
     }
 
     public void wristForward(double incremental){
@@ -99,8 +99,8 @@ public class Claw {
         servo2.setPosition(0.37);
     }
     public void setWrist45Right(){
-        servo1.setPosition(0.18);
-        servo2.setPosition(0.27);
+        servo1.setPosition(0.16);
+        servo2.setPosition(0.29);
     }
     public void setWrist45Left(){
         servo1.setPosition(0.29);

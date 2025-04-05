@@ -75,9 +75,11 @@ public class ClawTest extends LinearOpMode {
             }
 
             telemetry.addData("Color Sensor Distance", arm.getSpecimenColorSensor());
-            telemetry.addData("Claw position",  "Offset = %.2f", claw.claw.getPosition());
-            telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1.getPosition());
-            telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2.getPosition());
+            telemetry.addData("Pivot Touch Sensor Distance", arm.pivotTouch.getState());
+            telemetry.addData("Extension Touch Sensor Distance", arm.extensionTouch.getState());
+//            telemetry.addData("Claw position",  "Offset = %.2f", claw.claw.getPosition());
+//            telemetry.addData("Servo 1 position",  "Offset = %.2f", claw.servo1.getPosition());
+//            telemetry.addData("Servo 2 position",  "Offset = %.2f", claw.servo2.getPosition());
             telemetry.update();
             previousGamepad1.copy(currentGamepad1);
         }

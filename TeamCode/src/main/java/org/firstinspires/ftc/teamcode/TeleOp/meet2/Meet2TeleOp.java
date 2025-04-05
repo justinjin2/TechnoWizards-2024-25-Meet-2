@@ -55,7 +55,7 @@ public class Meet2TeleOp extends LinearOpMode {
         }
 
         arm.movePivotMotor(arm.groundIntakeEndPivot, arm.motorPower);
-        arm.parkServo.setPosition(arm.parkServoDown);
+        arm.initAligner();
 
         while (opModeIsActive() && !isStopRequested()) {
 
@@ -77,10 +77,10 @@ public class Meet2TeleOp extends LinearOpMode {
             driveTrain.Strafe = gamepad1.left_stick_x;
             driveTrain.Turn = -gamepad1.right_stick_x;
 
-            driveTrain.leftFrontPower = Range.clip(driveTrain.Speed + driveTrain.Strafe + driveTrain.Turn, -1, 1);
-            driveTrain.rightFrontPower = Range.clip(driveTrain.Speed - driveTrain.Strafe - driveTrain.Turn, -1, 1);
-            driveTrain.leftRearPower = Range.clip(driveTrain.Speed - driveTrain.Strafe + driveTrain.Turn, -1, 1);
-            driveTrain.rightRearPower = Range.clip(driveTrain.Speed + driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.leftFrontPower = Range.clip(driveTrain.Speed + driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.rightFrontPower = Range.clip(driveTrain.Speed - driveTrain.Strafe + driveTrain.Turn, -1, 1);
+            driveTrain.leftRearPower = Range.clip(driveTrain.Speed - driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.rightRearPower = Range.clip(driveTrain.Speed + driveTrain.Strafe + driveTrain.Turn, -1, 1);
 
             driveTrain.leftFront.setPower(driveTrain.leftFrontPower * driveTrain.rightSpeedAdjust * driveTrain.leftSpeedAdjust);
             driveTrain.rightFront.setPower(driveTrain.rightFrontPower * driveTrain.rightSpeedAdjust * driveTrain.leftSpeedAdjust);
@@ -91,6 +91,7 @@ public class Meet2TeleOp extends LinearOpMode {
             currentGamepad2.copy(gamepad2);
 
             if (currentGamepad2.a && !previousGamepad2.a) { //Ground Intake
+                arm.driveAligner();
                 arm.movePivotMotor(arm.groundIntakePivotReady, arm.motorPower);
                 arm.moveExtensionMotor(arm.groundIntakeExtension, arm.motorPower);
                 claw.clawOpen();
@@ -109,6 +110,9 @@ public class Meet2TeleOp extends LinearOpMode {
                 arm.moveExtensionMotor(arm.minimumExtension, arm.motorPower);
                 claw.wristDeliver();
                 finiteState = FiniteState.DELIVERY_LOW_BUCKET;
+            }
+            if (currentGamepad2.right_stick_button && !previousGamepad2.right_stick_button) {
+                claw.setWrist90();
             }
             if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
                 if (DELIVERY_CHECK == 1) {
@@ -136,8 +140,8 @@ public class Meet2TeleOp extends LinearOpMode {
                     arm.intakeTimer.reset();
                 }
             }
-
             if (currentGamepad2.b && !previousGamepad2.b) {
+                arm.driveAligner();
                 claw.wristCenter();
                 claw.clawOpen();
                 arm.movePivotMotor(arm.wallIntakePivot, arm.motorPower);
@@ -164,10 +168,10 @@ public class Meet2TeleOp extends LinearOpMode {
                 arm.movePivotJoystickDown(arm.incrementalJoystickPivot, arm.motorPower);
             }
             if (gamepad2.right_stick_x < 0) {
-                claw.wristRightJoystick(claw.joystickIncrement);
+                claw.wristRightJoystick(Claw.joystickIncrement);
             }
             if (gamepad2.right_stick_x > 0) {
-                claw.wristLeftJoystick(claw.joystickIncrement);
+                claw.wristLeftJoystick(Claw.joystickIncrement);
             }
             if (currentGamepad2.back && !previousGamepad2.back) {
                 arm.resetTouch();
@@ -212,6 +216,7 @@ public class Meet2TeleOp extends LinearOpMode {
                 }
                 case INTAKE_WALL_END: {
                     if (arm.intakeTimer.milliseconds() > 100) {
+                        arm.specimenAligner();
                         claw.wristUp();
                         arm.movePivotMotor(arm.maximumPivot, arm.motorPower);
                         arm.moveExtensionMotor(arm.specimenDeliverExtension, arm.motorPower);
@@ -298,6 +303,14 @@ public class Meet2TeleOp extends LinearOpMode {
                     if (arm.extensionMotor.getCurrentPosition() + 50 >= arm.minimumExtension) {
                         claw.wristUp();
                         claw.clawClose();
+                        finiteState = FiniteState.RESET_ALIGNER_SPECIMEN;
+                        claw.clawTimer.reset();
+                    }
+                    break;
+                }
+                case RESET_ALIGNER_SPECIMEN: {
+                    if (claw.clawTimer.milliseconds() > 1000) {
+                        arm.driveAligner();
                         finiteState = FiniteState.IDLE;
                     }
                     break;
@@ -336,7 +349,9 @@ public class Meet2TeleOp extends LinearOpMode {
             previousGamepad1.copy(currentGamepad1);
             previousGamepad2.copy(currentGamepad2);
 
-            telemetry.addData("Arm Motor Position", arm.pivotMotor.getCurrentPosition());
+//            telemetry.addData("Arm Motor Position", arm.pivotMotor.getCurrentPosition());
+            telemetry.addData("Park Servo Position", arm.parkServo.getPosition());
+            telemetry.addData("Left Aligner Position", arm.leftAligner.getPosition());
 //            telemetry.addData("Extension Motor Position", arm.extensionMotor.getCurrentPosition());
 //            telemetry.addData("Claw position", claw.claw.getPosition());
 //            telemetry.addData("Servo 1 position", claw.servo1.getPosition());

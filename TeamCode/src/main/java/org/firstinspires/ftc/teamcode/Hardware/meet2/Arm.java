@@ -16,7 +16,7 @@ public class Arm {
     public int maximumPivot = 2660;
     public int resetPivot = 2350;
     public int maximumPivotSpecimen = 3345;
-    public int groundIntakePivotReady = 470 ;
+    public int groundIntakePivotReady = 480 ;
     public int groundIntakePivot = 345;
     public int wallIntakePivot = 730;
     public int wallIntakePivotAuto = 687 + 20;
@@ -24,7 +24,7 @@ public class Arm {
     public int minimumExtension = 0;
     public int groundIntakeExtension = 250;
     public int maximumIntakeExtension = 1100;
-    public int maximumDeliveryExtension = 2170;
+    public int maximumDeliveryExtension = 1900;
     public int specimenDeliverExtension = -150;
     public int incremental = 20;
     public int velocity = 2000;
@@ -59,7 +59,7 @@ public class Arm {
         pivotTouch = hwMap.get(DigitalChannel.class, "pivotTouch");
         specimenColorSensor = hwMap.get(ColorRangeSensor.class, "specimenColorSensor");
         parkServo = hwMap.get(ServoImplEx.class, "parkServo");
-        leftAligner = hwMap.get(ServoImplEx.class, "alignleft");
+        leftAligner = hwMap.get(ServoImplEx.class, "alignLeft");
 
         pivotMotor.setDirection(DcMotorEx.Direction.FORWARD);
         extensionMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -177,7 +177,7 @@ public class Arm {
         driveAligner();
         extensionMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeTimer.reset();
-        while (extensionTouch.getState() || intakeTimer.milliseconds() > 1500) {
+        while (extensionTouch.getState() && intakeTimer.milliseconds() < 1500) {
             extensionMotor.setPower(-1);
         }
         intakeTimer.reset();
@@ -187,7 +187,7 @@ public class Arm {
         extensionMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         pivotMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeTimer.reset();
-        while (pivotTouch.getState() || intakeTimer.milliseconds() > 2000){
+        while (pivotTouch.getState() && intakeTimer.milliseconds() < 2000){
             moveExtensionMotor(70, 0.5);
             pivotMotor.setPower(-0.7);
         }

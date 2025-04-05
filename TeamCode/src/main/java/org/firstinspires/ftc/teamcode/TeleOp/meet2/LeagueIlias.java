@@ -45,25 +45,17 @@ public class LeagueIlias extends LinearOpMode {
         arm.initRunExtMotor(arm.motorPower);
         arm.initRunPivotMotor(arm.motorPower);
 
+        waitForStart();
+
+        if (isStopRequested()) return;
+
         while (arm.extensionTouch.getState() && arm.pivotTouch.getState()){
             arm.resetTouch();
             sleep(500);
         }
 
-        arm.initAligner();
-
-        waitForStart();
-
-        if (isStopRequested()) return;
-
-//        while (arm.extensionTouch.getState() && arm.pivotTouch.getState()){
-//            arm.resetTouch();
-//            sleep(500);
-//        }
-
         arm.movePivotMotor(arm.groundIntakeEndPivot, arm.motorPower);
-        arm.parkServo.setPosition(arm.parkServoDown);
-        arm.driveAligner();
+        arm.initAligner();
 
         while (opModeIsActive() && !isStopRequested()) {
 
@@ -83,12 +75,12 @@ public class LeagueIlias extends LinearOpMode {
 
             driveTrain.Speed = gamepad1.left_stick_y;  // Inverted forward/backward movement
             driveTrain.Strafe = gamepad1.left_stick_x;
-            driveTrain.Turn = -gamepad1.right_stick_x * 0.5;  // Turning speed cut by 50%
+            driveTrain.Turn = -gamepad1.right_stick_x * 0.7;  // Turning speed cut by 50%
 
-            driveTrain.leftFrontPower = Range.clip(driveTrain.Speed - driveTrain.Strafe + driveTrain.Turn, -1, 1);
-            driveTrain.rightFrontPower = Range.clip(driveTrain.Speed + driveTrain.Strafe - driveTrain.Turn, -1, 1);
-            driveTrain.leftRearPower = Range.clip(driveTrain.Speed + driveTrain.Strafe + driveTrain.Turn, -1, 1);
-            driveTrain.rightRearPower = Range.clip(driveTrain.Speed - driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.leftFrontPower = Range.clip(driveTrain.Speed - driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.rightFrontPower = Range.clip(driveTrain.Speed + driveTrain.Strafe + driveTrain.Turn, -1, 1);
+            driveTrain.leftRearPower = Range.clip(driveTrain.Speed + driveTrain.Strafe - driveTrain.Turn, -1, 1);
+            driveTrain.rightRearPower = Range.clip(driveTrain.Speed - driveTrain.Strafe + driveTrain.Turn, -1, 1);
 
 
             driveTrain.leftFront.setPower(driveTrain.leftFrontPower * driveTrain.rightSpeedAdjust * driveTrain.leftSpeedAdjust);
@@ -99,12 +91,6 @@ public class LeagueIlias extends LinearOpMode {
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
-            if (currentGamepad1.dpad_left && !previousGamepad1.dpad_left) { //Ground Intake
-                INTAKE_CHECK = 0;
-                arm.movePivotMotor(1800, arm.motorPower);
-                claw.wristDeliver();
-                finiteState = FiniteState.DELIVERY_HIGH_BUCKET_PIVOT_BACKUP;
-            }
             if (currentGamepad1.a && !previousGamepad1.a) { //Ground Intake
                 arm.driveAligner();
                 arm.movePivotMotor(arm.groundIntakePivotReady, arm.motorPower);

@@ -53,11 +53,14 @@ public class HardStopTest extends LinearOpMode {
             }
 
             if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
-                arm.leftAligner.setPosition(arm.leftAligner.getPosition() + SERVO_INCREMENT);
+                arm.driveAligner();
+            }
+            if (currentGamepad1.dpad_left && !previousGamepad1.dpad_left) {
+                arm.specimenAligner();
             }
 
             if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
-                arm.leftAligner.setPosition(arm.leftAligner.getPosition() - SERVO_INCREMENT);
+                arm.initAligner();
             }
 
             telemetry.addData("Park Servo Position", arm.parkServo.getPosition());
